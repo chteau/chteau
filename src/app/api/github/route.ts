@@ -15,7 +15,7 @@ const BASE_HEADERS: HeadersInit = {
 };
 
 /** Shared Cache-Control header applied to every successful response. */
-const CACHE_HEADERS = { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400' };
+const CACHE_HEADERS = { 'Cache-Control': 'private, max-age=3600' };
 
 /**
  * Proxies GitHub API requests from the client, adding optional authentication
