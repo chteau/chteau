@@ -3,8 +3,20 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-    title: "Cheeteau",
-    description: "Simulation de système d'exploitation gothique fine art portfolio.",
+    title: "Cheeteau | Portfolio",
+    description: "Full-stack developer, familiar with Roblox, web development, and backend systems.",
+    openGraph: {
+        title: "Cheeteau | Portfolio",
+        description: "Full-stack developer, familiar with Roblox, web development, and backend systems.",
+        images: [{ url: "/screen.png" }],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Cheeteau | Portfolio",
+        description: "Full-stack developer, familiar with Roblox, web development, and backend systems.",
+        images: ["/screen.png"],
+    },
+    themeColor: "#3a78d8",
 };
 
 /**
