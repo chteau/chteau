@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+@theme {
+  /* Windows XP Luna Blue theme */
+  --color-primary: #1c5dc8;
+  --color-primary-container: #0a246a;
+  --color-on-primary-container: #1252b8;
+  --color-surface: #ffffff;
+  --color-surface-container: #ece9d8;
+  --color-surface-container-high: #d4d0c8;
+  --color-surface-container-low: #f0efe8;
+  --color-background: #3a6ea8;
+  --color-on-background: #000000;
+  --color-on-surface: #000000;
+  --color-on-surface-variant: #444444;
+  --color-outline: #7b9ebd;
+
+  --font-serif: Tahoma, Verdana, "Segoe UI", Arial, sans-serif;
+  --font-mono: Tahoma, Verdana, "Segoe UI", Arial, sans-serif;
+}
+
+body {
+  overflow: hidden;
+  background-color: #3a6ea8;
+  font-family: Tahoma, Verdana, "Segoe UI", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+}
+
+.os-window {
+  background: #ece9d8;
+  border: 2px solid #0054e3;
+  box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+}
+
+.os-title-bar {
+  background: linear-gradient(180deg,
+      #5994e3 0%,
+      #2d6ec8 8%,
+      #1558b8 50%,
+      #0a46a0 88%,
+      #1060cc 100%);
+}
+
+.scrollbar-custom::-webkit-scrollbar {
+  width: 17px;
+  height: 17px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border: 1px solid #c8c8c8;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #ebebeb, #b0b0b0);
+  border: 1px solid #909090;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #c8d8f8, #8898d8);
+}
+
+/* Range input style overrides */
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 18px;
+  background: linear-gradient(to bottom, #e0e8ff, #7080d0);
+  border: 1px solid #4060c0;
+  cursor: pointer;
+}

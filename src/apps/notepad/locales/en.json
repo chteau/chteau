@@ -1,0 +1,51 @@
+{
+  "app_title": "Chteau.txt - Notepad",
+  "tab_bio": "000_BIO",
+  "tab_journey": "010_JOURNEY",
+  "tab_skills": "202_SKILLS",
+  "tab_contact": "003_CONTACT",
+  "bio_title": "BIO // CHEETEAU",
+  "bio_subtitle": "Who am I?",
+  "bio_paragraphs": [
+    "My interest in programming dates back to sixth grade. Since then, I have built a wide range of projects, both as a freelancer and purely for personal interest.",
+    "In addition to my role in development, I am employed as a security guard at a nightclub.",
+    "I possess hands-on experience in web development and Roblox game development."
+  ],
+  "what_i_do_title": "What I Do",
+  "what_i_do": [
+    "Design and develop full-stack web applications from concept to launch",
+    "Build Roblox games and tools using Luau, Roblox Studio, VSCode and Argon/Rojo",
+    "Take on freelance projects across web and game development",
+    "Continuously learn and experiment with new frameworks and technologies"
+  ],
+  "journey_title": "My Journey",
+  "journey_subtitle": "A chronological log of the path that led here.",
+  "journey_years": [
+    "2014",
+    "2015",
+    "2022",
+    "2023",
+    "Now"
+  ],
+  "journey_titles": [
+    "Where It All Started",
+    "Web Development",
+    "Roblox Development",
+    "Freelancing",
+    "Developer & Security Guard"
+  ],
+  "journey_descs": [
+    "Began exploring programming in sixth grade, igniting a lifelong passion for building things with code using Game Maker.",
+    "Dived deep into full-stack web development, mastering PHP, JavaScript, TypeScript, React and later on Next.js and Vue.",
+    "Started scripting Roblox games using Luau, contributing to multiple projects and building custom tools.",
+    "Began taking on freelance projects, delivering web and game development work for various clients.",
+    "Balancing active development work with a role as a security guard in a nightclub, continuing to ship new projects."
+  ],
+  "skills_title": "SKILLS",
+  "skills_subtitle": "List of active developer profiles and tools.",
+  "contact_title": "GET IN TOUCH",
+  "contact_subtitle": "Connect with me for projects or inquiries.",
+  "contact_paragraphs": [
+    "For project inquiries, collaborations, or just to say hi — reach out on Roblox or Discord."
+  ]
+}

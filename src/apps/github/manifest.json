@@ -1,0 +1,16 @@
+{
+    "id": "github",
+    "name": "GitHub",
+    "version": "1.0.0",
+    "author": "CHTEAU",
+    "icon": "Github",
+    "permissions": [],
+    "window": {
+        "width": 760,
+        "height": 540,
+        "x": 130,
+        "y": 30
+    },
+    "multiInstance": false,
+    "desktopBadge": false
+}

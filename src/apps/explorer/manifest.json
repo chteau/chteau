@@ -1,0 +1,10 @@
+{
+  "id": "explorer",
+  "name": "Projects",
+  "version": "2.0.0",
+  "author": "Cheeteau",
+  "icon": "FolderOpen",
+  "permissions": [],
+  "window": { "x": 160, "y": 60 },
+  "multiInstance": false
+}

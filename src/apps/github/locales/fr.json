@@ -1,0 +1,34 @@
+{
+    "tab_profile": "001_PROFIL",
+    "tab_repos":   "010_DÉPÔTS",
+    "tab_stars":   "011_ÉTOILES",
+
+    "profile_title":    "PROFIL // CHTEAU",
+    "profile_entry":    "ENTRÉE #001_PROFIL",
+
+    "repos_title":   "DÉPÔTS",
+    "repos_entry":   "ENTRÉE #010_DÉPÔTS",
+    "repos_subtitle": "Dépôts publics, triés par dernier push.",
+
+    "stars_title":   "ÉTOILÉS",
+    "stars_entry":   "ENTRÉE #011_ÉTOILÉS",
+    "stars_subtitle": "Dépôts étoilés par ce compte.",
+
+    "loading":   "Récupération des données GitHub...",
+    "error":     "Échec de récupération des données GitHub.",
+    "no_repos":  "Aucun dépôt public trouvé.",
+    "no_stars":  "Aucun dépôt étoilé trouvé.",
+    "no_token":  "Définissez GITHUB_TOKEN dans .env pour activer le calendrier de contributions.",
+    "no_readme": "Aucun README de profil trouvé.",
+
+    "label_followers":  "Abonnés",
+    "label_following":  "Abonnements",
+    "label_repos":      "Dépôts",
+    "label_orgs":       "Organisations",
+    "label_contribs":   "Contributions",
+    "label_total":      "total",
+    "label_forked":     "Forké",
+    "label_stars":      "Étoiles",
+    "label_forks":      "Forks",
+    "label_readme":     "README.md"
+}

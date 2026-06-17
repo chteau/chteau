@@ -1,0 +1,18 @@
+{
+    "id": "notepad",
+    "name": "Notepad",
+    "version": "1.0.0",
+    "author": "CHTEAU",
+    "icon": "FileText",
+    "permissions": [
+        "notifications"
+    ],
+    "window": {
+        "width": 630,
+        "height": 480,
+        "x": 110,
+        "y": 24
+    },
+    "multiInstance": false,
+    "desktopBadge": true
+}

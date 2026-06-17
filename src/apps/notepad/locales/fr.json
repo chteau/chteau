@@ -1,0 +1,51 @@
+{
+  "app_title": "Chteau.txt - Bloc-notes",
+  "tab_bio": "000_BIO",
+  "tab_journey": "010_PARCOURS",
+  "tab_skills": "202_COMPÉTENCES",
+  "tab_contact": "003_CONTACT",
+  "bio_title": "BIO // CHEETEAU",
+  "bio_subtitle": "Qui suis-je?",
+  "bio_paragraphs": [
+    "Mon intérêt pour la programmation remonte à la sixième. Depuis, j'ai développé une large gamme de projets, aussi bien en freelance que par simple curiosité personnelle.",
+    "En parallèle de mon activité de développeur, je suis également agent de sécurité en boîte de nuit.",
+    "Je possède une expérience concrète dans le développement web et le développement de jeux Roblox."
+  ],
+  "what_i_do_title": "Ce que je fais",
+  "what_i_do": [
+    "Concevoir et développer des applications web full-stack, de l'idée au lancement.",
+    "Créer des jeux et outils Roblox avec Luau, Roblox Studio, VSCode et Argon/Rojo.",
+    "Prendre en charge des projets freelance en développement web et de jeux.",
+    "Apprendre et expérimenter continuellement de nouveaux frameworks et technologies."
+  ],
+  "journey_title": "Mon Parcours",
+  "journey_subtitle": "Une chronologie du chemin parcouru jusqu'ici.",
+  "journey_years": [
+    "2014",
+    "2015",
+    "2022",
+    "2023",
+    "Maintenant"
+  ],
+  "journey_titles": [
+    "Les Premiers Pas",
+    "Développement Web",
+    "Développement Roblox",
+    "Freelance",
+    "Développeur & Agent de Sécurité"
+  ],
+  "journey_descs": [
+    "Démarrage de la programmation en sixième, allumant une passion durable pour la création à travers le code avec Game Maker.",
+    "Plongée dans le développement full-stack, maîtrisant PHP, JavaScript, TypeScript, React puis Next.js et Vue.",
+    "Début du scripting de jeux Roblox en Luau, contribution à plusieurs projets et création d'outils personnalisés.",
+    "Lancement dans des projets freelance, livrant du travail en développement web et de jeux pour divers clients.",
+    "Équilibre entre le développement actif et un rôle d'agent de sécurité en boîte de nuit, en continuant à livrer de nouveaux projets."
+  ],
+  "skills_title": "COMPÉTENCES",
+  "skills_subtitle": "Liste des technologies et outils maîtrisés.",
+  "contact_title": "CONTACTER",
+  "contact_subtitle": "Contactez-moi pour discuter de projets ou d'opportunités.",
+  "contact_paragraphs": [
+    "Pour toute demande de projet, collaboration ou simplement pour échanger — contactez-moi sur Roblox ou Discord."
+  ]
+}
