@@ -197,10 +197,15 @@ export function ProfileTab({ t }: Props) {
 
         let alive = true;
 
+        const safeJson = (r: Response) => {
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return r.json();
+        };
+
         Promise.all([
-            fetch(`/api/github?type=profile&username=${GITHUB_USERNAME}`).then(r => r.json()),
-            fetch(`/api/github?type=contributions&username=${GITHUB_USERNAME}&year=${currentYear}`).then(r => r.json()),
-            fetch(`/api/github?type=readme&username=${GITHUB_USERNAME}`).then(r => r.json()),
+            fetch(`/api/github?type=profile&username=${GITHUB_USERNAME}`).then(safeJson),
+            fetch(`/api/github?type=contributions&username=${GITHUB_USERNAME}&year=${currentYear}`).then(safeJson),
+            fetch(`/api/github?type=readme&username=${GITHUB_USERNAME}`).then(safeJson),
         ]).then(([pd, cd, rd]) => {
             if (!alive) return;
 

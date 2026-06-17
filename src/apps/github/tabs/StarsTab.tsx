@@ -77,7 +77,7 @@ export function StarsTab({ t }: Props) {
         let alive = true;
 
         fetch(`/api/github?type=starred&username=${GITHUB_USERNAME}`)
-            .then(r => r.json())
+            .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
             .then(d => {
                 if (!alive) return;
                 const data: Repo[] = Array.isArray(d.starred) ? d.starred : [];
