@@ -9,6 +9,7 @@ export const TRANSLATIONS = {
         desktop_explorer: "Projects",
         desktop_terminal: "Core_Sys",
         desktop_github: "GitHub",
+        desktop_roblox: "Roblox",
 
         start_menu_btn: "CHTEAU",
         start_programs: "PROGRAMS",
@@ -41,6 +42,7 @@ export const TRANSLATIONS = {
         desktop_explorer: "Projets",
         desktop_terminal: "Sys_Core",
         desktop_github: "Git_Hub",
+        desktop_roblox: "Roblox",
         start_menu_btn: "CHTEAU",
         start_programs: "PROGRAMMES",
         start_filter: "ÉCRAN TRC",
@@ -72,6 +74,7 @@ export const TRANSLATIONS = {
         desktop_explorer: "Raktresoù",
         desktop_terminal: "Sist_Kreiz",
         desktop_github: "Git_Hub",
+        desktop_roblox: "Roblox",
         start_menu_btn: "CHTEAU",
         start_programs: "PROGRAMMOÙ",
         start_filter: "SKRAMM CRT",

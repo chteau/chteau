@@ -10,4 +10,5 @@ export const APP_COMPONENTS: Record<string, React.ComponentType<AppProps>> = {
     notepad: dynamic(() => import('../apps/notepad/index')),
     explorer: dynamic(() => import('../apps/explorer/index')),
     github: dynamic(() => import('../apps/github/index')),
+    roblox: dynamic(() => import('../apps/roblox/index')),
 };

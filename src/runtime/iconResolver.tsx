@@ -5,6 +5,7 @@ import React from 'react';
 import notepadIconData from '../apps/notepad/icon.png';
 import explorerIconData from '../apps/explorer/icon.png';
 import githubIconData from '../apps/github/icon.png';
+import robloxIconData from '../apps/roblox/icon.png';
 import genericIconData from '../assets/Generic.png';
 
 // Types
@@ -16,6 +17,7 @@ const PNG_MAP: Record<string, string> = {
     notepad: notepadIconData.src,
     explorer: explorerIconData.src,
     github: githubIconData.src,
+    roblox: robloxIconData.src,
 };
 
 // Constants

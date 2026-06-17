@@ -27,6 +27,11 @@ const LOCALE_IMPORTERS: Record<string, Record<string, LocaleImporter>> = {
     fr: () => import('../apps/github/locales/fr.json'),
     br: () => import('../apps/github/locales/br.json'),
   },
+  roblox: {
+    en: () => import('../apps/roblox/locales/en.json'),
+    fr: () => import('../apps/roblox/locales/fr.json'),
+    br: () => import('../apps/roblox/locales/br.json'),
+  },
 };
 
 /**

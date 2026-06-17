@@ -2,6 +2,7 @@
 import notepadManifest from '../apps/notepad/manifest.json';
 import explorerManifest from '../apps/explorer/manifest.json';
 import githubManifest from '../apps/github/manifest.json';
+import robloxManifest from '../apps/roblox/manifest.json';
 import type { AppManifest } from '../types/manifest';
 
 /**
@@ -13,4 +14,5 @@ export const APP_REGISTRY: Record<string, AppManifest> = {
     notepad: notepadManifest as AppManifest,
     explorer: explorerManifest as AppManifest,
     github: githubManifest as AppManifest,
+    roblox: robloxManifest as AppManifest,
 };
