@@ -405,7 +405,7 @@ export default function MobileView({ onPowerOff, onToggleCRT, crtEnabled }: Mobi
 
             {/* Full-width gesture bar — back / home / app switcher */}
             <footer
-                className="shrink-0 z-40 select-none bg-black/35 backdrop-blur-md border-t border-white/10 rounded-t-lg"
+                className="shrink-0 z-40 select-none bg-black/35 backdrop-blur-md border-t border-white/10"
                 id="mobile-gesture-bar"
             >
                 <div className="flex items-center justify-center gap-20 py-2.5">
