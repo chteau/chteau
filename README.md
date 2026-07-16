@@ -41,5 +41,6 @@ Started with Game Maker back in the day and never really stopped. Over the years
 
 [![Roblox](https://img.shields.io/badge/Roblox-chteau-00A2FF?style=for-the-badge&logo=roblox&logoColor=white)](https://www.roblox.com/users/925308243/profile)
 [![Discord](https://img.shields.io/badge/Discord-chteau-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/users/830189337244991488)
+[![Email](https://img.shields.io/badge/Email-cteau%40proton.me-6D4AFF?style=for-the-badge&logo=protonmail&logoColor=white)](mailto:cteau@proton.me)
 
 </div>
