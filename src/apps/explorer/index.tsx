@@ -96,7 +96,7 @@ export default defineApp(({ runtime }) => {
                 </div>
 
                 {/* Center — grid or list depending on available width */}
-                <div ref={centerRef} className="flex-1 overflow-y-auto scrollbar-custom bg-white min-h-0">
+                <div ref={centerRef} className="flex-1 overflow-y-auto scrollbar-custom bg-white min-h-0 @container">
                     {isListView ? (
                         <div className="flex flex-col divide-y divide-outline/20">
                             {filtered.map(project => (
@@ -111,7 +111,7 @@ export default defineApp(({ runtime }) => {
                             ))}
                         </div>
                     ) : (
-                        <div className="p-4 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
+                        <div className="p-4 grid grid-cols-2 @lg:grid-cols-3 @2xl:grid-cols-4 gap-4">
                             {filtered.map(project => (
                                 <ProjectCard
                                     key={project.id}

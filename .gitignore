@@ -11,3 +11,4 @@ tsconfig.tsbuildinfo
 .next/
 # Local Netlify folder
 .netlify
+bun.lock
