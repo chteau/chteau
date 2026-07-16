@@ -1,8 +1,10 @@
 "use client";
 
 // Dependencies
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { MapPin, Building2, Link2 } from 'lucide-react';
+import { marked } from 'marked';
+import DOMPurify from 'isomorphic-dompurify';
 import { GITHUB_USERNAME } from '../constants';
 import { cacheGet, cacheSet } from '../cache';
 
@@ -77,98 +79,30 @@ function contribColor(count: number): string {
     return '#216e39';
 }
 
-/**
- * Converts a subset of inline Markdown syntax to React nodes.
- * Handles: `code`, **bold**, *italic*, ~~strikethrough~~, [link](url).
- *
- * @param text - Raw Markdown text for a single line
- * @returns Mixed array of strings and React elements
- */
-function renderInline(text: string): React.ReactNode {
-    const parts: React.ReactNode[] = [];
-    const pattern = /(`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*|\[([^\]]+)\]\(([^)]+)\)|~~[^~]+~~)/g;
-    let last = 0;
-    let key = 0;
-    let m: RegExpExecArray | null;
-
-    while ((m = pattern.exec(text)) !== null) {
-        if (m.index > last) parts.push(text.slice(last, m.index));
-        const s = m[0];
-        if (s.startsWith('`')) parts.push(<code key={key++} className="bg-surface-container px-1 text-on-primary-container font-mono text-[10px]">{s.slice(1, -1)}</code>);
-        else if (s.startsWith('**')) parts.push(<strong key={key++} className="text-on-surface font-bold">{s.slice(2, -2)}</strong>);
-        else if (s.startsWith('~~')) parts.push(<del key={key++} className="opacity-40">{s.slice(2, -2)}</del>);
-        else if (s.startsWith('*')) parts.push(<em key={key++} className="italic">{s.slice(1, -1)}</em>);
-        else if (s.startsWith('[')) parts.push(<a key={key++} href={m[3]} target="_blank" rel="noopener noreferrer" className="text-[#39d353] hover:underline">{m[2]}</a>);
-        last = m.index + s.length;
+// GitHub profile READMEs commonly wrap images/badges in raw HTML (`<div
+// align="center">`, `<img>`, `<br/>`...). `marked` parses that alongside the
+// Markdown; this hook then forces every link it produces to open safely in
+// a new tab. Registered once at module scope.
+DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+    if (node.tagName === 'A') {
+        node.setAttribute('target', '_blank');
+        node.setAttribute('rel', 'noopener noreferrer');
     }
-    if (last < text.length) parts.push(text.slice(last));
-    return parts.length > 0 ? parts : text;
-}
+});
 
 /**
- * Renders a GitHub-flavoured Markdown string as lightweight React elements.
- * Supports fenced code blocks, ATX headings (H1–H3), unordered lists,
- * horizontal rules, and inline formatting via `renderInline`.
+ * Parses a GitHub-flavoured Markdown README (which may embed raw HTML) and
+ * sanitizes the result before it's ever handed to `dangerouslySetInnerHTML`,
+ * since this content comes from an external API response, not our own code.
  *
- * @param content - Raw Markdown string
+ * @param content - Raw Markdown/HTML README content
+ * @returns Sanitized HTML safe to inject
  */
-function SimpleMarkdown({ content }: { content: string }) {
-    const lines = content.split('\n');
-    const out: React.ReactNode[] = [];
-    let i = 0;
-
-    while (i < lines.length) {
-        const line = lines[i];
-
-        // Fenced code block
-        if (line.trimStart().startsWith('```')) {
-            const code: string[] = [];
-            i++;
-            while (i < lines.length && !lines[i].trimStart().startsWith('```')) {
-                code.push(lines[i]);
-                i++;
-            }
-            out.push(
-                <pre key={out.length} className="bg-surface-container border border-outline/20 p-3 text-[10px] text-on-surface overflow-x-auto my-2 font-mono">
-                    <code>{code.join('\n')}</code>
-                </pre>
-            );
-            i++;
-            continue;
-        }
-
-        // Unordered list block — consume consecutive list items at once
-        if (/^[-*+] /.test(line)) {
-            const items: string[] = [];
-            while (i < lines.length && /^[-*+] /.test(lines[i])) {
-                items.push(lines[i].slice(2));
-                i++;
-            }
-            out.push(
-                <ul key={out.length} className="my-1 space-y-0.5">
-                    {items.map((item, j) => (
-                        <li key={j} className="flex items-start gap-2 text-sm text-on-surface-variant ml-2">
-                            <span className="text-[#39d353] mt-0.5 shrink-0">•</span>
-                            <span>{renderInline(item)}</span>
-                        </li>
-                    ))}
-                </ul>
-            );
-            continue;
-        }
-
-        // ATX headings
-        if (line.startsWith('### ')) out.push(<h3 key={out.length} className="text-xs font-bold text-on-primary-container mt-4 mb-1 uppercase tracking-wide">{renderInline(line.slice(4))}</h3>);
-        else if (line.startsWith('## ')) out.push(<h2 key={out.length} className="text-sm font-bold text-on-primary-container mt-4 mb-2 border-b border-outline/20 pb-1">{renderInline(line.slice(3))}</h2>);
-        else if (line.startsWith('# ')) out.push(<h1 key={out.length} className="text-base font-bold text-on-primary-container mt-4 mb-2 border-b border-outline/30 pb-1">{renderInline(line.slice(2))}</h1>);
-        else if (/^---+$/.test(line.trim())) out.push(<hr key={out.length} className="border-outline/20 my-2" />);
-        else if (line.trim() === '') out.push(<div key={out.length} className="h-2" />);
-        else out.push(<p key={out.length} className="text-sm text-on-surface-variant leading-relaxed">{renderInline(line)}</p>);
-
-        i++;
-    }
-
-    return <div className="space-y-0.5">{out}</div>;
+function renderReadmeHtml(content: string): string {
+    const rawHtml = marked.parse(content, { async: false, gfm: true, breaks: true }) as string;
+    return DOMPurify.sanitize(rawHtml, {
+        FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'link', 'meta', 'base', 'form'],
+    });
 }
 
 /**
@@ -229,6 +163,7 @@ export function ProfileTab({ t }: Props) {
     }, []);
 
     const { profile, orgs, weeks, total, hasToken, readme, loading, error } = state;
+    const readmeHtml = useMemo(() => (readme ? renderReadmeHtml(readme) : ''), [readme]);
 
     if (loading) {
         return (
@@ -369,15 +304,16 @@ export function ProfileTab({ t }: Props) {
                 )}
             </div>
 
-            {/* Profile README */}
+            {/* Profile README — parsed Markdown/HTML, sanitized before injection since it comes from the GitHub API */}
             {readme ? (
                 <div>
                     <h3 className="text-xs font-bold text-on-surface/65 tracking-widest uppercase mb-2">
                         {t('label_readme')}
                     </h3>
-                    <div className="border border-outline/20 bg-surface-container-low p-4 max-h-72 overflow-y-auto scrollbar-custom">
-                        <SimpleMarkdown content={readme} />
-                    </div>
+                    <div
+                        className="border border-outline/20 bg-surface-container-low p-4 max-h-72 overflow-y-auto scrollbar-custom text-sm text-on-surface-variant leading-relaxed [&_h1]:text-base [&_h1]:font-bold [&_h1]:text-on-primary-container [&_h1]:border-b [&_h1]:border-outline/30 [&_h1]:pb-1 [&_h1]:mt-4 [&_h1]:mb-2 [&_h2]:text-sm [&_h2]:font-bold [&_h2]:text-on-primary-container [&_h2]:border-b [&_h2]:border-outline/20 [&_h2]:pb-1 [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:text-xs [&_h3]:font-bold [&_h3]:text-on-primary-container [&_h3]:uppercase [&_h3]:tracking-wide [&_h3]:mt-4 [&_h3]:mb-1 [&_p]:my-2 [&_a]:text-[#39d353] [&_a]:hover:underline [&_strong]:text-on-surface [&_strong]:font-bold [&_code]:bg-surface-container [&_code]:px-1 [&_code]:text-on-primary-container [&_code]:font-mono [&_code]:text-[10px] [&_pre]:bg-surface-container [&_pre]:border [&_pre]:border-outline/20 [&_pre]:p-3 [&_pre]:overflow-x-auto [&_pre]:my-2 [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-1 [&_li]:my-0.5 [&_hr]:border-outline/20 [&_hr]:my-3 [&_img]:max-w-full [&_img]:inline-block [&_blockquote]:border-l-2 [&_blockquote]:border-outline/30 [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:opacity-80 [&_del]:opacity-40 [&_table]:w-full [&_table]:text-xs [&_th]:border [&_th]:border-outline/20 [&_th]:p-1 [&_td]:border [&_td]:border-outline/20 [&_td]:p-1"
+                        dangerouslySetInnerHTML={{ __html: readmeHtml }}
+                    />
                 </div>
             ) : (
                 <div className="text-xs text-on-surface/50 italic">{t('no_readme')}</div>
