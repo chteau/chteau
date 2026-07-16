@@ -14,4 +14,7 @@ export interface AppManifest {
     window: { width?: number; height?: number; x: number; y: number };
     multiInstance: boolean;
     desktopBadge?: boolean;
+
+    /** Accent color for the mobile home-screen icon tile. Mobile shell only. */
+    mobileColor?: string;
 }

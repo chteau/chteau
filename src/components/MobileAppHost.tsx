@@ -88,8 +88,10 @@ export default function MobileAppHost({ pid }: MobileAppHostProps) {
 
     if (localeLoading || !runtime || !AppComponent) {
         return (
-            <div className="flex items-center justify-center h-full text-[10px] font-mono text-on-surface-variant/60 uppercase tracking-widest animate-pulse">
-                Loading module...
+            <div className="flex items-center justify-center h-full">
+                <span className="bg-black/50 backdrop-blur-sm rounded-full px-3 py-1.5 text-[10px] font-mono text-white uppercase tracking-widest animate-pulse">
+                    Loading module...
+                </span>
             </div>
         );
     }

@@ -6,5 +6,6 @@
   "icon": "FolderOpen",
   "permissions": [],
   "window": { "x": 160, "y": 60 },
-  "multiInstance": false
+  "multiInstance": false,
+  "mobileColor": "#ecd687"
 }

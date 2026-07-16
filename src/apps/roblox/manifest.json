@@ -12,5 +12,6 @@
         "y": 40
     },
     "multiInstance": false,
-    "desktopBadge": false
+    "desktopBadge": false,
+    "mobileColor": "#e33f3c"
 }

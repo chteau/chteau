@@ -1,12 +1,32 @@
 "use client";
 
 // Dependencies
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { motion, AnimatePresence, type PanInfo } from 'motion/react';
 import { useCHTEAUSDK } from '../sdk/CHTEAUSDK';
 import { useProcessManager } from '../runtime/ProcessManagerContext';
-import { FolderOpen, FileText, Terminal as TermIcon, Wifi, ChevronLeft, Home, Power } from 'lucide-react';
+import { APP_REGISTRY } from '../runtime/appRegistry';
+import { resolveIcon } from '../runtime/iconResolver';
+import { ArrowLeft, SquareStack, Wifi, SignalHigh, BatteryFull, Monitor, Power, X } from 'lucide-react';
 import MobileAppHost from './MobileAppHost';
+import type { OSProcess } from '../types/process';
+import type { AppManifest } from '../types/manifest';
+
+/** Fallback tile color for apps that don't declare a manifest `mobileColor`. */
+const DEFAULT_TILE_COLOR = '#3a3a3a';
+
+/**
+ * Some app icon assets bleed closer to their own canvas edge than others, so
+ * rendering every icon at the same box size still reads as visually
+ * mismatched. These per-app multipliers even out the apparent glyph size —
+ * mobile shell only, doesn't affect the desktop icon resolver.
+ */
+const ICON_VISUAL_SCALE: Record<string, number> = {
+    notepad: 1,
+    explorer: 0.95,
+    github: 0.85,
+    roblox: 0.88,
+};
 
 /**
  * Input attributes for MobileView.
@@ -18,9 +38,129 @@ interface MobileViewProps {
 }
 
 /**
- * Handheld viewport (<=1024px) providing fullscreen single-app navigation,
- * status bars, and a quick dock. App rendering is delegated to MobileAppHost,
- * which builds the same injected runtime used by the desktop window frames.
+ * Squircle app icon rendered with a per-app skeuomorphic gradient (manifest
+ * `mobileColor`) — used on both the home-screen grid and the app switcher.
+ *
+ * @param appId - App id, resolves the icon glyph, color, and visual scale.
+ * @param icon - Manifest icon name, forwarded to the icon resolver.
+ * @param color - Manifest `mobileColor`, or the default tile color.
+ * @param size - Tile edge length in pixels.
+ * @param badge - Whether to render the small notification dot.
+ */
+function AppIconTile({
+    appId,
+    icon,
+    color,
+    size = 64,
+    badge = false,
+}: {
+    appId: string;
+    icon: string;
+    color?: string;
+    size?: number;
+    badge?: boolean;
+}) {
+    const Icon = resolveIcon(icon, appId);
+    const tileColor = color ?? DEFAULT_TILE_COLOR;
+    const iconScale = ICON_VISUAL_SCALE[appId] ?? 1;
+
+    return (
+        <div
+            className="relative border overflow-hidden flex items-center justify-center active:scale-95 transition-transform shadow-[0_4px_14px_rgba(0,0,0,0.35)]"
+            style={{
+                width: size,
+                height: size,
+                borderRadius: Math.round(size * 0.28),
+                background: `linear-gradient(155deg, color-mix(in srgb, ${tileColor} 65%, white) 0%, ${tileColor} 55%, color-mix(in srgb, ${tileColor} 78%, black) 100%)`,
+                borderColor: `color-mix(in srgb, ${tileColor} 55%, black)`,
+            }}
+        >
+            <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/35 to-transparent pointer-events-none" />
+            <Icon size={Math.round(size * 0.56 * iconScale)} className="relative z-10 drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]" />
+            {badge && (
+                <div className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-black/30 z-20" />
+            )}
+        </div>
+    );
+}
+
+/**
+ * App switcher card. Tap re-opens the app; swiping it up (or tapping the
+ * close chip) terminates its process. A drag-vs-tap guard keeps a slightly
+ * missed swipe from being read as a tap that reopens the app.
+ *
+ * @param proc - Running process backing this card.
+ * @param meta - App manifest, for the icon glyph/color.
+ * @param label - Localised app title.
+ * @param onOpen - Re-opens the app and closes the switcher.
+ * @param onClose - Terminates the process.
+ */
+function SwitcherCard({
+    proc,
+    meta,
+    label,
+    onOpen,
+    onClose,
+}: {
+    proc: OSProcess;
+    meta?: AppManifest;
+    label: string;
+    onOpen: () => void;
+    onClose: () => void;
+}) {
+    const dragged = useRef(false);
+
+    return (
+        <motion.div
+            layout
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, y: -40, scale: 0.85 }}
+            transition={{ duration: 0.16 }}
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={0.65}
+            onDrag={(_e, info: PanInfo) => {
+                if (Math.abs(info.offset.y) > 8) dragged.current = true;
+            }}
+            onDragEnd={(_e, info: PanInfo) => {
+                if (info.offset.y < -55 || info.velocity.y < -450) onClose();
+                setTimeout(() => { dragged.current = false; }, 0);
+            }}
+            onClick={() => {
+                if (dragged.current) return;
+                onOpen();
+            }}
+            whileTap={{ scale: 0.96 }}
+            style={{ touchAction: 'none' }}
+            className="relative rounded-lg border border-white/15 bg-white/5 backdrop-blur-md p-4 flex flex-col items-center gap-2 cursor-pointer"
+            id={`mobile-switcher-card-${proc.pid}`}
+        >
+            <button
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onClose();
+                }}
+                className="absolute top-1 right-1 w-7 h-7 rounded-full bg-black/65 border border-white/20 flex items-center justify-center text-white/80 hover:text-white cursor-pointer z-10"
+                id={`mobile-switcher-close-${proc.pid}`}
+            >
+                <X size={15} />
+            </button>
+            <AppIconTile appId={proc.appId} icon={meta?.icon ?? ''} color={meta?.mobileColor} size={48} />
+            <span className="text-[10px] font-bold text-white truncate max-w-full">
+                {label}
+            </span>
+        </motion.div>
+    );
+}
+
+/**
+ * Handheld viewport (<=1024px) styled as its own original mobile OS shell —
+ * a translucent status bar, a glass "widget" header, a skeuomorphic app-icon
+ * grid, and a full-width gesture bar (back / home / app-switcher) — rather
+ * than a shrunk clone of the desktop window manager. App rendering is
+ * delegated to MobileAppHost, which builds the same injected runtime used
+ * by the desktop window frames.
  *
  * @param props - CRT / power controls
  */
@@ -28,6 +168,7 @@ export default function MobileView({ onPowerOff, onToggleCRT, crtEnabled }: Mobi
     const sdk = useCHTEAUSDK();
     const { state, dispatch } = useProcessManager();
     const [activeAppId, setActiveAppId] = useState<string | null>(null);
+    const [switcherOpen, setSwitcherOpen] = useState(false);
     const [currentTime, setCurrentTime] = useState<string>('00:00');
 
     // Maintain mobile status clock
@@ -47,6 +188,10 @@ export default function MobileView({ onPowerOff, onToggleCRT, crtEnabled }: Mobi
         return () => clearInterval(interval);
     }, []);
 
+    // Installed apps for the home-screen grid — same source of truth as desktop.
+    const apps = useMemo(() => Object.values(APP_REGISTRY), []);
+    const runningProcesses = Object.values(state.processes);
+
     /**
      * Opens an installed app fullscreen, launching its process on first open.
      * Single-instance apps reuse their existing process via the reducer guard.
@@ -56,24 +201,44 @@ export default function MobileView({ onPowerOff, onToggleCRT, crtEnabled }: Mobi
     const openApp = (appId: string) => {
         dispatch({ type: 'LAUNCH_APP', appId });
         setActiveAppId(appId);
+        setSwitcherOpen(false);
+    };
+
+    /** Returns to the home screen without terminating the active app's process. */
+    const goHome = () => {
+        setActiveAppId(null);
+        setSwitcherOpen(false);
+    };
+
+    /** Gesture-bar back action: closes the switcher, else backs out of the active app. */
+    const goBack = () => {
+        if (switcherOpen) {
+            setSwitcherOpen(false);
+            return;
+        }
+        if (activeAppId !== null) setActiveAppId(null);
+    };
+
+    /**
+     * Terminates a running process from the app switcher. Auto-hides the
+     * switcher once the last running app is closed.
+     *
+     * @param pid - Process id to close
+     * @param appId - App id backing that process, to clear it if active
+     */
+    const closeProcess = (pid: number, appId: string) => {
+        dispatch({ type: 'CLOSE_PROCESS', pid });
+        if (activeAppId === appId) setActiveAppId(null);
+        if (runningProcesses.length <= 1) setSwitcherOpen(false);
     };
 
     // Resolve the live process backing the active app (last launched wins).
     const activeProc = activeAppId
-        ? Object.values(state.processes).find(p => p.appId === activeAppId) ?? null
+        ? runningProcesses.find(p => p.appId === activeAppId) ?? null
         : null;
+    const activeAppMeta = activeAppId ? APP_REGISTRY[activeAppId] : null;
 
-    /**
-     * Uppercase title label for the active app header.
-     *
-     * @returns Active app title label
-     */
-    const getAppTitle = (): string => {
-        if (activeAppId === 'notepad') return sdk.t('desktop_notepad').toUpperCase();
-        if (activeAppId === 'explorer') return sdk.t('desktop_explorer').toUpperCase();
-        if (activeAppId === 'terminal') return sdk.t('desktop_terminal').toUpperCase();
-        return '';
-    };
+    const canGoBack = switcherOpen || activeAppId !== null;
 
     return (
         <div
@@ -81,26 +246,24 @@ export default function MobileView({ onPowerOff, onToggleCRT, crtEnabled }: Mobi
             id="mobile-workspace"
         >
             {/* Top Status Bar */}
-            <header className="h-9 bg-surface-container border-b border-outline/30 flex items-center justify-between px-4 text-[10px] text-on-surface-variant font-bold select-none shrink-0 z-50">
+            <header className="h-9 bg-black/25 backdrop-blur-md flex items-center justify-between px-4 text-[10px] text-white/80 font-bold select-none shrink-0 z-50">
                 <div className="flex items-center gap-1.5">
                     <span className="text-white font-black tracking-tighter">CHTEAU_MOBILE</span>
-                    <Wifi size={10} className="text-primary" />
                 </div>
                 <div>
-                    <span className="text-white text-xs">{currentTime}</span>
+                    <span className="text-white text-xs tabular-nums">{currentTime}</span>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                     <span className="text-[9px]">LTE</span>
-                    <div className="flex items-center gap-0.5 border border-outline px-0.5 py-px h-3 w-5 relative">
-                        <div className="bg-primary-container h-full w-[80%]" />
-                        <div className="absolute top-0.5 -right-0.5 h-1.5 w-0.5 bg-outline" />
-                    </div>
+                    <SignalHigh size={11} className="text-white/80" />
+                    <Wifi size={11} className="text-white/80" />
+                    <BatteryFull size={13} className="text-white/80" />
                 </div>
             </header>
 
             {/* Screen Router Viewport */}
             <main className="grow relative overflow-hidden flex flex-col">
-                <AnimatePresence mode="wait">
+                <AnimatePresence>
                     {activeAppId === null ? (
                         /* Home Icon Screen */
                         <motion.div
@@ -109,84 +272,62 @@ export default function MobileView({ onPowerOff, onToggleCRT, crtEnabled }: Mobi
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 1.02 }}
                             transition={{ duration: 0.18 }}
-                            className="h-full w-full flex flex-col justify-between p-6 overflow-y-auto"
+                            className="absolute inset-0 flex flex-col p-5 overflow-y-auto"
                         >
-                            <div className="space-y-6">
-                                {/* Welcome header */}
-                                <div className="text-center font-serif py-4 border-b border-outline/25">
-                                    <span className="text-[9.5px] tracking-widest text-shadow-outline font-mono block uppercase">{sdk.t('welcome_subtitle')}</span>
-                                    <h1 className="text-3xl italic uppercase tracking-tighter font-black text-white">{sdk.t('welcome_title')}</h1>
+                            {/* Glass "widget" header — clock + portfolio tagline */}
+                            <div className="rounded-lg bg-primary-container/60 backdrop-blur-xl border border-white/15 px-5 py-4 shadow-[0_8px_24px_rgba(0,0,0,0.35)] shrink-0">
+                                <div className="text-[9.5px] uppercase tracking-[0.2em] text-white/70 font-bold [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
+                                    {sdk.t('welcome_subtitle')}
                                 </div>
-
-                                {/* Navigation Launcher Nodes */}
-                                <div className="grid grid-cols-4 gap-y-6 gap-x-3 pt-4 justify-items-center">
-
-                                    {/* STORY icon */}
-                                    <button
-                                        onClick={() => openApp('notepad')}
-                                        className="flex flex-col items-center gap-1.5 cursor-pointer max-w-17.5 text-center"
-                                        id="mobile-btn-story"
-                                    >
-                                        <div className="w-14 h-14 bg-surface-container border border-outline flex items-center justify-center relative rounded-md active:scale-95 transition-all shadow-[2px_2px_0_black]">
-                                            <FileText size={22} className="text-primary-container" />
-                                            <div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
-                                        </div>
-                                        <span className="text-[10px] tracking-tighter text-on-surface text-center font-bold">
-                                            {sdk.t('desktop_notepad')}
-                                        </span>
-                                    </button>
-
-                                    {/* Projects icon */}
-                                    <button
-                                        onClick={() => openApp('explorer')}
-                                        className="flex flex-col items-center gap-1.5 cursor-pointer max-w-17.5 text-center"
-                                        id="mobile-btn-explorer"
-                                    >
-                                        <div className="w-14 h-14 bg-surface-container border border-outline flex items-center justify-center rounded-md active:scale-95 transition-all shadow-[2px_2px_0_black]">
-                                            <FolderOpen size={22} className="text-primary-container" />
-                                        </div>
-                                        <span className="text-[10px] tracking-tighter text-on-surface text-center font-bold">
-                                            {sdk.t('desktop_explorer')}
-                                        </span>
-                                    </button>
-
-                                    {/* CORE_SYS icon */}
-                                    <button
-                                        onClick={() => openApp('terminal')}
-                                        className="flex flex-col items-center gap-1.5 cursor-pointer max-w-17.5 text-center"
-                                        id="mobile-btn-terminal"
-                                    >
-                                        <div className="w-14 h-14 bg-surface-container border border-outline flex items-center justify-center rounded-md active:scale-95 transition-all shadow-[2px_2px_0_black]">
-                                            <TermIcon size={22} className="text-primary" />
-                                        </div>
-                                        <span className="text-[10px] tracking-tighter text-on-surface text-center font-bold">
-                                            {sdk.t('desktop_terminal')}
-                                        </span>
-                                    </button>
-
+                                <div className="flex items-end justify-between mt-1">
+                                    <h1 className="text-3xl italic font-black text-white tracking-tight [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]">
+                                        {sdk.t('welcome_title')}
+                                    </h1>
+                                    <span className="text-xl font-bold text-white/90 tabular-nums [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]">
+                                        {currentTime}
+                                    </span>
                                 </div>
                             </div>
 
-                            {/* Utility parameters and Shutoff panel */}
-                            <div className="space-y-3 pt-6 border-t border-outline/20 mt-12 text-left">
+                            {/* Skeuomorphic app-icon grid */}
+                            <div className="grid grid-cols-4 gap-y-6 gap-x-3 justify-items-center pt-8">
+                                {apps.map(app => (
+                                    <button
+                                        key={app.id}
+                                        onClick={() => openApp(app.id)}
+                                        className="flex flex-col items-center gap-1.5 cursor-pointer max-w-17.5 text-center"
+                                        id={`mobile-btn-${app.id}`}
+                                    >
+                                        <AppIconTile appId={app.id} icon={app.icon} color={app.mobileColor} badge={app.desktopBadge} />
+                                        <span className="text-[10px] tracking-tight text-white text-center font-bold [text-shadow:0_1px_3px_rgba(0,0,0,0.7)]">
+                                            {sdk.t(`desktop_${app.id}`)}
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Quick toggles — compact control-center style pills */}
+                            <div className="flex items-center justify-center gap-4 pt-10 pb-2 mt-auto">
                                 <button
                                     onClick={onToggleCRT}
-                                    className="w-full py-2 border border-outline/40 hover:bg-surface-container text-xs flex items-center justify-between px-3 text-on-surface-variant active:scale-95 bg-surface-container-low transition-colors cursor-pointer"
+                                    className="flex items-center gap-1.5 rounded-full bg-black/30 backdrop-blur-md border border-white/15 px-4 py-2 active:scale-95 transition-transform cursor-pointer"
                                     id="mobile-btn-crt-toggle"
                                 >
-                                    <span className="uppercase tracking-tight text-[10px]">{sdk.t('trackbar_crt')}</span>
-                                    <span className={crtEnabled ? 'text-green-400 font-bold' : 'text-on-surface/40'}>
-                                        {crtEnabled ? '[ON]' : '[OFF]'}
+                                    <Monitor size={13} className={crtEnabled ? 'text-yellow-300' : 'text-white/50'} />
+                                    <span className="text-[9px] uppercase tracking-tight text-white/80 font-bold">
+                                        {sdk.t('trackbar_crt')} {crtEnabled ? '[ON]' : '[OFF]'}
                                     </span>
                                 </button>
 
                                 <button
                                     onClick={onPowerOff}
-                                    className="w-full py-2 border-2 border-red-950 bg-red-950/10 hover:bg-neutral-800 text-xs flex items-center justify-between px-3 text-red-400 hover:text-white transition-colors active:scale-95 cursor-pointer"
+                                    className="flex items-center gap-1.5 rounded-full bg-red-950/40 backdrop-blur-md border border-red-500/30 px-4 py-2 active:scale-95 transition-transform cursor-pointer"
                                     id="mobile-btn-power"
                                 >
-                                    <span className="uppercase tracking-wider font-bold text-[9px]">{sdk.t('start_power')}</span>
-                                    <Power size={11} className="shrink-0" />
+                                    <Power size={13} className="text-red-400 shrink-0" />
+                                    <span className="text-[9px] uppercase tracking-wider font-bold text-red-400">
+                                        {sdk.t('start_power')}
+                                    </span>
                                 </button>
                             </div>
                         </motion.div>
@@ -198,22 +339,16 @@ export default function MobileView({ onPowerOff, onToggleCRT, crtEnabled }: Mobi
                             animate={{ x: 0, opacity: 1 }}
                             exit={{ x: '100vw', opacity: 0.9 }}
                             transition={{ type: 'spring', damping: 24, stiffness: 220 }}
-                            className="absolute inset-0 bg-black flex flex-col justify-between"
+                            className="absolute inset-0 flex flex-col justify-between"
+                            style={{
+                                background: `linear-gradient(180deg, color-mix(in srgb, ${activeAppMeta?.mobileColor ?? DEFAULT_TILE_COLOR} 45%, black) 0%, #000 100%)`,
+                            }}
                         >
-                            {/* Back controls navigation subbar */}
-                            <div className="h-8 bg-surface-container border-b border-outline/35 px-2.5 flex items-center justify-between text-[11px] text-on-surface-variant select-none">
-                                <button
-                                    onClick={() => setActiveAppId(null)}
-                                    className="flex items-center gap-1 text-primary hover:text-white font-bold active:translate-y-[0.5px] cursor-pointer/80 cursor-pointer"
-                                    id="mobile-app-close-control"
-                                >
-                                    <ChevronLeft size={14} strokeWidth={2.5} className="shrink-0" />
-                                    <span>{sdk.t('start_programs')}</span>
-                                </button>
-                                <div className="font-bold tracking-wider text-white text-[10px] uppercase">
-                                    {getAppTitle()}
-                                </div>
-                                <div className="w-10" />
+                            {/* Slim in-app title bar — navigation lives in the gesture bar below */}
+                            <div className="h-7 bg-black/40 backdrop-blur-md flex items-center justify-center text-[10px] text-white select-none shrink-0">
+                                <span className="font-bold tracking-wider uppercase">
+                                    {sdk.t(`desktop_${activeAppId}`)}
+                                </span>
                             </div>
 
                             {/* Main viewport region for active application frame */}
@@ -221,7 +356,7 @@ export default function MobileView({ onPowerOff, onToggleCRT, crtEnabled }: Mobi
                                 {activeProc ? (
                                     <MobileAppHost pid={activeProc.pid} />
                                 ) : (
-                                    <div className="flex items-center justify-center h-full text-[10px] font-mono text-on-surface-variant/50 uppercase tracking-widest">
+                                    <div className="flex items-center justify-center h-full text-[10px] font-mono text-white/60 uppercase tracking-widest">
                                         Module unavailable
                                     </div>
                                 )}
@@ -229,42 +364,75 @@ export default function MobileView({ onPowerOff, onToggleCRT, crtEnabled }: Mobi
                         </motion.div>
                     )}
                 </AnimatePresence>
+
+                {/* App switcher overlay — running processes, closeable/swipeable */}
+                <AnimatePresence>
+                    {switcherOpen && runningProcesses.length > 0 && (
+                        <motion.div
+                            key="switcher"
+                            initial={{ opacity: 0, y: 24 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 24 }}
+                            transition={{ duration: 0.16 }}
+                            className="absolute inset-0 z-50 bg-black/85 backdrop-blur-lg p-5 overflow-y-auto"
+                            id="mobile-app-switcher"
+                        >
+                            <div className="text-[10px] uppercase tracking-widest text-white/50 font-bold mb-4 text-center">
+                                {sdk.t('start_programs')}
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <AnimatePresence>
+                                    {runningProcesses.map(proc => (
+                                        <SwitcherCard
+                                            key={proc.pid}
+                                            proc={proc}
+                                            meta={APP_REGISTRY[proc.appId]}
+                                            label={sdk.t(`desktop_${proc.appId}`)}
+                                            onOpen={() => {
+                                                setActiveAppId(proc.appId);
+                                                setSwitcherOpen(false);
+                                            }}
+                                            onClose={() => closeProcess(proc.pid, proc.appId)}
+                                        />
+                                    ))}
+                                </AnimatePresence>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </main>
 
-            {/* FOOTER QUICK DOCK INDICES */}
-            <footer className="h-11 bg-surface-container border-t-2 border-outline/60 flex items-center justify-around px-4 shrink-0 z-40 select-none">
-                <button
-                    onClick={() => openApp('notepad')}
-                    className={`p-1.5 transition-colors cursor-pointer ${activeAppId === 'notepad' ? 'text-primary' : 'text-on-surface-variant/60'}`}
-                    id="mobile-dock-btn-notepad"
-                >
-                    <FileText size={18} />
-                </button>
+            {/* Full-width gesture bar — back / home / app switcher */}
+            <footer
+                className="shrink-0 z-40 select-none bg-black/35 backdrop-blur-md border-t border-white/10 rounded-t-lg"
+                id="mobile-gesture-bar"
+            >
+                <div className="flex items-center justify-center gap-20 py-2.5">
+                    <button
+                        onClick={goBack}
+                        className={`w-9 h-9 flex items-center justify-center rounded-md transition-colors cursor-pointer ${canGoBack ? 'text-white/85 active:scale-90' : 'text-white/25 pointer-events-none'}`}
+                        id="mobile-nav-back"
+                    >
+                        <ArrowLeft size={20} />
+                    </button>
 
-                <button
-                    onClick={() => openApp('explorer')}
-                    className={`p-1.5 transition-colors cursor-pointer ${activeAppId === 'explorer' ? 'text-primary' : 'text-on-surface-variant/60'}`}
-                    id="mobile-dock-btn-explorer"
-                >
-                    <FolderOpen size={18} />
-                </button>
+                    <button
+                        onClick={goHome}
+                        className="w-9 h-9 flex items-center justify-center cursor-pointer active:scale-90 transition-transform"
+                        id="mobile-nav-home"
+                    >
+                        <div className="w-5 h-5 rounded-full border-2 border-white/85" />
+                    </button>
 
-                <button
-                    onClick={() => setActiveAppId(null)}
-                    className="flex items-center justify-center p-2 rounded-full border border-outline bg-black text-primary-container hover:text-white transition-colors cursor-pointer active:scale-95"
-                    id="mobile-dock-btn-home"
-                >
-                    <Home size={16} />
-                </button>
-
-                <button
-                    onClick={() => openApp('terminal')}
-                    className={`p-1.5 transition-colors cursor-pointer ${activeAppId === 'terminal' ? 'text-primary' : 'text-on-surface-variant/60'}`}
-                    id="mobile-dock-btn-terminal"
-                >
-                    <TermIcon size={18} />
-                </button>
-
+                    <button
+                        onClick={() => setSwitcherOpen(o => !o)}
+                        className={`w-9 h-9 flex items-center justify-center rounded-md transition-colors cursor-pointer active:scale-90 ${switcherOpen ? 'bg-white/20 text-white' : 'text-white/85'}`}
+                        id="mobile-nav-switcher"
+                    >
+                        <SquareStack size={20} />
+                    </button>
+                </div>
             </footer>
         </div>
     );
