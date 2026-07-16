@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
-import { Tag, FolderOpen, ExternalLink, GitBranch } from 'lucide-react';
+import { Tag, FolderOpen, ExternalLink, GitBranch, Menu, X, ArrowLeft } from 'lucide-react';
 import { defineApp } from '../../runtime/defineApp';
 import { PROJECTS, resolveAppUrl, type Project } from './projects';
 
@@ -22,6 +22,8 @@ export default defineApp(({ runtime }) => {
     const [selectedId, setSelectedId] = useState<string>(PROJECTS[0]?.id ?? '');
     const [currentTag, setCurrentTag] = useState<string | null>(null);
     const [isListView, setIsListView] = useState(false);
+    const [tagsMenuOpen, setTagsMenuOpen] = useState(false);
+    const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
     const centerRef = useRef<HTMLDivElement>(null);
 
     /** Switch to list view when the center panel is too narrow for cards. */
@@ -43,15 +45,40 @@ export default defineApp(({ runtime }) => {
 
     const selected = PROJECTS.find(p => p.id === selectedId) ?? PROJECTS[0] ?? null;
 
+    /** Selects a project and, on mobile, navigates to the detail "page". */
+    const selectProject = (id: string) => {
+        setSelectedId(id);
+        setMobileDetailOpen(true);
+    };
+
+    /** Applies a tag filter and closes the mobile burger menu. */
+    const selectTag = (tag: string | null) => {
+        setCurrentTag(tag);
+        setTagsMenuOpen(false);
+    };
+
+    const tagButtonClass = (isActive: boolean) =>
+        `w-full text-left text-xs px-2 py-1 flex items-center justify-between hover:bg-surface-container hover:text-primary transition-colors cursor-pointer ${isActive ? 'bg-primary-container text-white border border-outline' : 'text-on-surface/70'}`;
+
     return (
-        <div className="flex flex-col h-full bg-white text-on-surface font-mono overflow-hidden" id="app-explorer">
+        <div className="flex flex-col h-full bg-white text-on-surface font-mono overflow-hidden relative" id="app-explorer">
 
             {/* Menu bar + path */}
             <div className="bg-surface-container border-b border-outline/30 px-2 py-1.5 flex items-center justify-between text-[11px] select-none text-on-surface-variant shrink-0">
                 <div className="flex items-center gap-4">
-                    {['File', 'Edit', 'View', 'Tools', 'Help'].map(item => (
-                        <span key={item} className="cursor-pointer hover:text-primary transition-colors uppercase">{item}</span>
-                    ))}
+                    <button
+                        onClick={() => setTagsMenuOpen(true)}
+                        className="lg:hidden flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer"
+                        id="explorer-tags-menu-btn"
+                    >
+                        <Menu size={13} />
+                        <span className="uppercase font-bold">{t('explorer_tags_label')}</span>
+                    </button>
+                    <div className="hidden lg:flex items-center gap-4">
+                        {['File', 'Edit', 'View', 'Tools', 'Help'].map(item => (
+                            <span key={item} className="cursor-pointer hover:text-primary transition-colors uppercase">{item}</span>
+                        ))}
+                    </div>
                 </div>
                 <div className="text-[10px] bg-surface-container border border-outline/40 px-2 py-0.5 tracking-tight flex items-center gap-1">
                     <FolderOpen size={10} className="text-primary-container" />
@@ -62,16 +89,13 @@ export default defineApp(({ runtime }) => {
             {/* Main layout */}
             <div className="flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
 
-                {/* Left sidebar — tag filters */}
-                <div className="w-full lg:w-44 bg-surface-container-low lg:border-r border-b lg:border-b-0 border-outline/30 p-3 select-none flex lg:flex-col gap-3 shrink-0 overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto">
-                    <div className="space-y-1 lg:w-full shrink-0">
-                        <div className="text-[9px] text-primary uppercase font-bold tracking-wider mb-1 lg:block hidden">
+                {/* Left sidebar — tag filters (desktop only; mobile uses the burger drawer below) */}
+                <div className="hidden lg:flex lg:w-44 bg-surface-container-low lg:border-r border-outline/30 p-3 select-none lg:flex-col gap-3 shrink-0 lg:overflow-y-auto">
+                    <div className="space-y-1 w-full shrink-0">
+                        <div className="text-[9px] text-primary uppercase font-bold tracking-wider mb-1">
                             {t('explorer_tags_label')}
                         </div>
-                        <button
-                            onClick={() => setCurrentTag(null)}
-                            className={`w-full text-left text-xs px-2 py-1 flex items-center justify-between hover:bg-surface-container hover:text-primary transition-colors cursor-pointer ${currentTag === null ? 'bg-primary-container text-white border border-outline' : 'text-on-surface/70'}`}
-                        >
+                        <button onClick={() => setCurrentTag(null)} className={tagButtonClass(currentTag === null)}>
                             <span>{t('explorer_all_projects')}</span>
                             <span className="text-[9px] opacity-60">({PROJECTS.length})</span>
                         </button>
@@ -79,11 +103,7 @@ export default defineApp(({ runtime }) => {
                         {allTags.map(tag => {
                             const count = PROJECTS.filter(p => p.tags.includes(tag)).length;
                             return (
-                                <button
-                                    key={tag}
-                                    onClick={() => setCurrentTag(tag)}
-                                    className={`w-full text-left text-xs px-2 py-1 flex items-center justify-between hover:bg-surface-container hover:text-primary transition-colors cursor-pointer ${currentTag === tag ? 'bg-primary-container text-white border border-outline' : 'text-on-surface/70'}`}
-                                >
+                                <button key={tag} onClick={() => setCurrentTag(tag)} className={tagButtonClass(currentTag === tag)}>
                                     <span className="flex items-center gap-1">
                                         <Tag size={10} />
                                         {tag}
@@ -95,8 +115,51 @@ export default defineApp(({ runtime }) => {
                     </div>
                 </div>
 
-                {/* Center — grid or list depending on available width */}
-                <div ref={centerRef} className="flex-1 overflow-y-auto scrollbar-custom bg-white min-h-0 @container">
+                {/* Mobile tag drawer — burger menu overlay */}
+                {tagsMenuOpen && (
+                    <div className="absolute inset-0 z-30 flex lg:hidden" id="explorer-tags-drawer">
+                        <div
+                            className="absolute inset-0 bg-black/40"
+                            onClick={() => setTagsMenuOpen(false)}
+                            id="explorer-tags-drawer-backdrop"
+                        />
+                        <div className="relative w-64 max-w-[80%] h-full bg-surface-container-low border-r border-outline/30 p-3 overflow-y-auto shadow-[4px_0_16px_rgba(0,0,0,0.35)]">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-[9px] text-primary uppercase font-bold tracking-wider">
+                                    {t('explorer_tags_label')}
+                                </span>
+                                <button onClick={() => setTagsMenuOpen(false)} className="text-on-surface-variant hover:text-primary cursor-pointer" id="explorer-tags-drawer-close">
+                                    <X size={14} />
+                                </button>
+                            </div>
+                            <div className="space-y-1">
+                                <button onClick={() => selectTag(null)} className={tagButtonClass(currentTag === null)}>
+                                    <span>{t('explorer_all_projects')}</span>
+                                    <span className="text-[9px] opacity-60">({PROJECTS.length})</span>
+                                </button>
+
+                                {allTags.map(tag => {
+                                    const count = PROJECTS.filter(p => p.tags.includes(tag)).length;
+                                    return (
+                                        <button key={tag} onClick={() => selectTag(tag)} className={tagButtonClass(currentTag === tag)}>
+                                            <span className="flex items-center gap-1">
+                                                <Tag size={10} />
+                                                {tag}
+                                            </span>
+                                            <span className="text-[10px] opacity-65">({count})</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Center — grid or list depending on available width; hidden on mobile while the detail page is open */}
+                <div
+                    ref={centerRef}
+                    className={`flex-1 overflow-y-auto scrollbar-custom bg-white min-h-0 @container ${mobileDetailOpen ? 'hidden lg:block' : ''}`}
+                >
                     {isListView ? (
                         <div className="flex flex-col divide-y divide-outline/20">
                             {filtered.map(project => (
@@ -104,7 +167,7 @@ export default defineApp(({ runtime }) => {
                                     key={project.id}
                                     project={project}
                                     isSelected={selected?.id === project.id}
-                                    onSelect={() => setSelectedId(project.id)}
+                                    onSelect={() => selectProject(project.id)}
                                     openLabel={t('explorer_open_app')}
                                     githubLabel={t('explorer_open_github')}
                                 />
@@ -117,7 +180,7 @@ export default defineApp(({ runtime }) => {
                                     key={project.id}
                                     project={project}
                                     isSelected={selected?.id === project.id}
-                                    onSelect={() => setSelectedId(project.id)}
+                                    onSelect={() => selectProject(project.id)}
                                     openLabel={t('explorer_open_app')}
                                     githubLabel={t('explorer_open_github')}
                                 />
@@ -126,13 +189,16 @@ export default defineApp(({ runtime }) => {
                     )}
                 </div>
 
-                {/* Right — inspector panel */}
+                {/* Right — inspector panel: always-on sidebar on desktop, a separate "page" on mobile */}
                 {selected && (
                     <Inspector
                         project={selected}
                         openLabel={t('explorer_open_app')}
                         githubLabel={t('explorer_open_github')}
                         inspectorLabel={t('explorer_inspector_label')}
+                        backLabel={t('explorer_back_to_list')}
+                        mobileVisible={mobileDetailOpen}
+                        onBack={() => setMobileDetailOpen(false)}
                     />
                 )}
             </div>
@@ -289,27 +355,47 @@ function ProjectCard({ project, isSelected, onSelect, openLabel, githubLabel }: 
  *
  * Renders the thumbnail preview, title, description, tag pills, a metadata
  * block (live URL and GitHub URL when present), and full-width action buttons.
+ * On desktop it's an always-visible side panel; on mobile it's a separate
+ * "page" (only shown once a project is tapped) with its own back button.
  *
  * @param project - The currently selected project to inspect.
  * @param openLabel - Localised label for the "Open App" button.
  * @param githubLabel - Localised label for the "GitHub" button.
  * @param inspectorLabel - Localised panel header string.
+ * @param backLabel - Localised "back to list" label (mobile only).
+ * @param mobileVisible - Whether this page is the active mobile screen.
+ * @param onBack - Returns to the project list on mobile.
  */
 function Inspector({
     project,
     openLabel,
     githubLabel,
     inspectorLabel,
+    backLabel,
+    mobileVisible,
+    onBack,
 }: {
     project: Project;
     openLabel: string;
     githubLabel: string;
     inspectorLabel: string;
+    backLabel: string;
+    mobileVisible: boolean;
+    onBack: () => void;
 }) {
     const appUrl = resolveAppUrl(project);
 
     return (
-        <div className="w-full lg:w-80 bg-surface-container lg:border-l border-t lg:border-t-0 border-outline/40 p-4 select-text flex flex-col shrink-0 overflow-y-auto max-h-75 lg:max-h-none">
+        <div className={`${mobileVisible ? 'flex' : 'hidden'} lg:flex w-full lg:w-80 bg-surface-container lg:border-l border-outline/40 p-4 select-text flex-col flex-1 lg:flex-none overflow-y-auto`}>
+            <button
+                onClick={onBack}
+                className="lg:hidden flex items-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors cursor-pointer mb-3 shrink-0"
+                id="explorer-detail-back"
+            >
+                <ArrowLeft size={13} />
+                <span className="text-[10px] uppercase font-bold tracking-wide">{backLabel}</span>
+            </button>
+
             <div className="space-y-4 text-left flex-1">
                 <div className="flex items-center justify-between border-b border-primary-container/40 pb-2">
                     <div className="text-[10px] font-bold uppercase tracking-wider text-primary">{inspectorLabel}</div>

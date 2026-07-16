@@ -7,5 +7,6 @@
   "explorer_all_projects": "[ALL_PROJECTS]",
   "explorer_tags_label": "Tags",
   "explorer_inspector_label": "Project Details",
+  "explorer_back_to_list": "Back to Projects",
   "explorer_footer_vault": "PROJECTS_VAULT"
 }

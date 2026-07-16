@@ -57,12 +57,12 @@ export default defineApp(({ runtime }) => {
 
             <div className="grow flex flex-col md:flex-row overflow-hidden">
                 {/* Sidebar */}
-                <div className="w-full md:w-44 md:shrink-0 bg-surface-container-low md:border-r border-b md:border-b-0 border-outline/30 flex md:flex-col select-none">
+                <div className="w-full md:w-44 md:shrink-0 bg-surface-container-low md:border-r border-b md:border-b-0 border-outline/30 flex md:flex-col overflow-x-auto md:overflow-x-visible select-none">
                     {tabs.map(({ id, Icon, label }) => (
                         <button
                             key={id}
                             onClick={() => setActiveTab(id)}
-                            className={`flex items-center gap-2 p-3 text-left border-r md:border-r-0 md:border-b border-outline/20 text-xs transition-colors uppercase cursor-pointer ${activeTab === id
+                            className={`flex items-center gap-2 p-3 text-left border-r md:border-r-0 md:border-b border-outline/20 text-xs transition-colors uppercase cursor-pointer shrink-0 whitespace-nowrap ${activeTab === id
                                 ? 'bg-primary-container text-white border-l-2 border-l-primary font-bold'
                                 : 'text-on-surface/70 hover:bg-surface-container-high hover:text-on-surface'
                             }`}
