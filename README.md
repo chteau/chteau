@@ -28,8 +28,8 @@ Started with Game Maker back in the day and never really stopped. Over the years
 
 <div align="center">
 
-<img src="https://github-readme-stats.vercel.app/api?username=chteau&show_icons=true&hide_border=true&bg_color=0d1117&icon_color=5994e3&title_color=5994e3&text_color=a0a0b0&rank_icon=github" height="165" />
-<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=chteau&layout=compact&hide_border=true&bg_color=0d1117&title_color=5994e3&text_color=a0a0b0&langs_count=8" height="165" />
+<img src="https://github-stats-extended.vercel.app/api?username=chteau&show_icons=true&hide_border=true&bg_color=0d1117&icon_color=5994e3&title_color=5994e3&text_color=a0a0b0&rank_icon=github" height="165" />
+<img src="https://github-stats-extended.vercel.app/api/top-langs/?username=chteau&layout=compact&hide_border=true&bg_color=0d1117&title_color=5994e3&text_color=a0a0b0&langs_count=8" height="165" />
 
 </div>
 
