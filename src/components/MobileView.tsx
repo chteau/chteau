@@ -2,7 +2,7 @@
 
 // Dependencies
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { motion, AnimatePresence, type PanInfo } from 'motion/react';
+import { motion, AnimatePresence, useMotionValue, useTransform, type PanInfo } from 'motion/react';
 import { useCHTEAUSDK } from '../sdk/CHTEAUSDK';
 import { useProcessManager } from '../runtime/ProcessManagerContext';
 import { APP_REGISTRY } from '../runtime/appRegistry';
@@ -85,8 +85,10 @@ function AppIconTile({
 }
 
 /**
- * App switcher card. Tap re-opens the app; swiping it up (or tapping the
- * close chip) terminates its process. A drag-vs-tap guard keeps a slightly
+ * App switcher card. Tap re-opens the app; swiping it right (or tapping the
+ * close chip) terminates its process. Dragging on the horizontal axis (while
+ * the switcher grid itself only ever scrolls vertically) avoids fighting the
+ * browser's native scroll gesture. A drag-vs-tap guard keeps a slightly
  * missed swipe from being read as a tap that reopens the app.
  *
  * @param proc - Running process backing this card.
@@ -109,22 +111,28 @@ function SwitcherCard({
     onClose: () => void;
 }) {
     const dragged = useRef(false);
+    const x = useMotionValue(0);
+    // Fades the icon/label toward the swipe direction — a visual cue that
+    // releasing past the threshold will close the app. The close chip stays
+    // fully opaque so it's always legible.
+    const contentOpacity = useTransform(x, [0, 120], [1, 0.2]);
 
     return (
         <motion.div
             layout
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, y: -40, scale: 0.85 }}
+            exit={{ opacity: 0, x: 140, scale: 0.85 }}
             transition={{ duration: 0.16 }}
-            drag="y"
-            dragConstraints={{ top: 0, bottom: 0 }}
+            drag="x"
+            style={{ x, touchAction: 'none' }}
+            dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.65}
             onDrag={(_e, info: PanInfo) => {
-                if (Math.abs(info.offset.y) > 8) dragged.current = true;
+                if (Math.abs(info.offset.x) > 8) dragged.current = true;
             }}
             onDragEnd={(_e, info: PanInfo) => {
-                if (info.offset.y < -55 || info.velocity.y < -450) onClose();
+                if (info.offset.x > 55 || info.velocity.x > 450) onClose();
                 setTimeout(() => { dragged.current = false; }, 0);
             }}
             onClick={() => {
@@ -132,7 +140,6 @@ function SwitcherCard({
                 onOpen();
             }}
             whileTap={{ scale: 0.96 }}
-            style={{ touchAction: 'none' }}
             className="relative rounded-lg border border-white/15 bg-white/5 backdrop-blur-md p-4 flex flex-col items-center gap-2 cursor-pointer"
             id={`mobile-switcher-card-${proc.pid}`}
         >
@@ -146,10 +153,12 @@ function SwitcherCard({
             >
                 <X size={15} />
             </button>
-            <AppIconTile appId={proc.appId} icon={meta?.icon ?? ''} color={meta?.mobileColor} size={48} />
-            <span className="text-[10px] font-bold text-white truncate max-w-full">
-                {label}
-            </span>
+            <motion.div style={{ opacity: contentOpacity }} className="flex flex-col items-center gap-2">
+                <AppIconTile appId={proc.appId} icon={meta?.icon ?? ''} color={meta?.mobileColor} size={48} />
+                <span className="text-[10px] font-bold text-white truncate max-w-full">
+                    {label}
+                </span>
+            </motion.div>
         </motion.div>
     );
 }
