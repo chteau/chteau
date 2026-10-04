@@ -15,6 +15,7 @@ interface PostDetail {
     title: string;
     date: string;
     excerpt: string;
+    headings: { text: string; slug: string }[];
     mdxSource: MDXRemoteSerializeResult;
 }
 
@@ -85,19 +86,41 @@ export default function BlogSection() {
                         <span className="text-xs text-on-surface-variant uppercase tracking-widest animate-pulse">…</span>
                     </div>
                 ) : (
-                    <div className="max-w-3xl">
-                        <h1 className="font-display text-2xl sm:text-3xl font-medium text-white" style={{ letterSpacing: '0.02em' }}>
-                            {post.title}
-                        </h1>
-                        {post.date && <p className="text-xs text-on-surface-variant mt-2 uppercase tracking-wide">{post.date}</p>}
+                    <div className="grid lg:grid-cols-[1fr_200px] gap-10">
+                        <div className="max-w-3xl">
+                            <h1 className="font-display text-2xl sm:text-3xl font-medium text-white" style={{ letterSpacing: '0.02em' }}>
+                                {post.title}
+                            </h1>
+                            {post.date && <p className="text-xs text-on-surface-variant mt-2 uppercase tracking-wide">{post.date}</p>}
 
-                        <div className={`${PROSE_CLASS} mt-8`}>
-                            <MDXRemote {...post.mdxSource} />
+                            <div className={`${PROSE_CLASS} mt-8`}>
+                                <MDXRemote {...post.mdxSource} />
+                            </div>
+
+                            <div className="mt-14 pt-8 border-t border-outline/20">
+                                <BlogComments slug={post.slug} />
+                            </div>
                         </div>
 
-                        <div className="mt-14 pt-8 border-t border-outline/20">
-                            <BlogComments slug={post.slug} />
-                        </div>
+                        {post.headings.length > 0 && (
+                            <aside className="hidden lg:block h-fit sticky top-0">
+                                <h3 className="text-[10px] font-bold text-on-primary-container tracking-widest uppercase mb-3">
+                                    {sdk.t('blog_toc_title')}
+                                </h3>
+                                <ul className="space-y-2 border-l border-outline/20">
+                                    {post.headings.map((h) => (
+                                        <li key={h.slug}>
+                                            <a
+                                                href={`#${h.slug}`}
+                                                className="block pl-3 -ml-px border-l border-transparent hover:border-primary text-xs text-on-surface-variant hover:text-primary transition-colors leading-snug"
+                                            >
+                                                {h.text}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </aside>
+                        )}
                     </div>
                 )}
             </div>
@@ -124,7 +147,7 @@ export default function BlogSection() {
     }
 
     return (
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
             {posts.map((p) => (
                 <button
                     key={p.slug}

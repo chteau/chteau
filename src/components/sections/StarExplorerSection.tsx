@@ -43,7 +43,7 @@ export default function StarExplorerSection({ onFocusStar }: { onFocusStar: (sta
     }
 
     return (
-        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
             {stars.map((star) => (
                 <button
                     key={star.id}

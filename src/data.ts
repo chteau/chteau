@@ -39,6 +39,7 @@ export const TRANSLATIONS = {
 
         blog_title: "Blog",
         blog_empty: "No posts yet — check back soon.",
+        blog_toc_title: "On this page",
 
         stars_explorer_empty: "No stars yet — be the first to add one.",
 
@@ -84,6 +85,7 @@ export const TRANSLATIONS = {
 
         blog_title: "Blog",
         blog_empty: "Aucun article pour l'instant — revenez bientôt.",
+        blog_toc_title: "Sur cette page",
 
         stars_explorer_empty: "Aucune étoile pour l'instant — soyez le premier à en ajouter une.",
 
@@ -129,6 +131,7 @@ export const TRANSLATIONS = {
 
         blog_title: "Blog",
         blog_empty: "N'eus pennad ebet c'hoazh — distroit a-benn nebeut.",
+        blog_toc_title: "War ar bajenn-mañ",
 
         stars_explorer_empty: "N'eus steredenn ebet c'hoazh — bezit an hini gentañ da ouzhpennañ unan.",
 
