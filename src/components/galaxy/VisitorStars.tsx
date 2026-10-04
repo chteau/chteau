@@ -11,11 +11,15 @@ interface VisitorStar {
     githubUrl?: string;
     robloxUrl?: string;
     avatarUrl?: string;
+    verified?: boolean;
     message: string;
     color: string;
     position: [number, number, number];
     createdAt: string;
 }
+
+// ~55% smaller than the decorative feature stars' 0.5 base scale, same glow texture/twinkle/hover-boost behavior.
+const BASE_SCALE = 0.22;
 
 function VisitorStarPoint({
     star,
@@ -34,7 +38,7 @@ function VisitorStarPoint({
         const t = clock.getElapsedTime();
         const twinkle = 0.8 + Math.sin(t * 1.6 + star.position[0] * 9.1) * 0.15;
         const boost = hovered || selected ? 1.5 : 1;
-        const scale = 0.5 * twinkle * boost;
+        const scale = BASE_SCALE * twinkle * boost;
         spriteRef.current.scale.set(scale, scale, 1);
     });
 
@@ -64,8 +68,20 @@ function VisitorStarPoint({
                         <div className="glass-chip px-3.5 py-2.5 text-[11px] -translate-y-10 w-[220px] space-y-1.5">
                             <div className="flex items-start gap-2.5">
                                 {star.avatarUrl && (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img src={star.avatarUrl} alt="" width={32} height={32} className="shrink-0" />
+                                    <div className="relative shrink-0">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src={star.avatarUrl} alt="" width={32} height={32} />
+                                        {star.verified && (
+                                            // eslint-disable-next-line @next/next/no-img-element
+                                            <img
+                                                src="/verified.svg"
+                                                alt="Verified"
+                                                width={13}
+                                                height={13}
+                                                className="absolute -bottom-1 -right-1"
+                                            />
+                                        )}
+                                    </div>
                                 )}
                                 <p className="text-on-surface leading-snug">{star.message}</p>
                             </div>

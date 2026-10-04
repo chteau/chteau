@@ -7,6 +7,8 @@ export interface VisitorStar {
     githubUrl?: string;
     robloxUrl?: string;
     avatarUrl?: string;
+    /** Roblox's verified-badge status for the linked account — GitHub has no equivalent concept here. */
+    verified?: boolean;
     message: string;
     color: string;
     position: [number, number, number];
@@ -21,8 +23,10 @@ interface StoredStar extends VisitorStar {
 const STORE_NAME = 'visitor-stars';
 const BLOB_KEY = 'all';
 
-// Same palette FieldGalaxies uses for its decoy galaxies, so visitor stars read as part of the same visual family.
-const PALETTE = ['#7dd3fc', '#fb923c', '#f472b6', '#c084fc', '#fde047', '#60a5fa', '#f87171', '#e5e7eb', '#a78bfa'];
+// Green, deliberately — none of the 5 feature stars (sectionStars.ts) or the
+// decoy-galaxy palette use green, so a visitor star is never mistaken for one
+// of ours at a glance. A few shades for twinkle variety, all clearly green.
+const PALETTE = ['#4ade80', '#22c55e', '#86efac', '#34d399'];
 
 /** Random point in the same shell FieldGalaxies/BackgroundStars occupy, well clear of our own nebula. */
 function randomPosition(): [number, number, number] {
@@ -47,6 +51,7 @@ function toPublic(star: StoredStar): VisitorStar {
         githubUrl: star.githubUrl,
         robloxUrl: star.robloxUrl,
         avatarUrl: star.avatarUrl,
+        verified: star.verified,
         message: star.message,
         color: star.color,
         position: star.position,
@@ -79,10 +84,21 @@ export async function listPublicStars(): Promise<VisitorStar[]> {
     return stars.map(toPublic);
 }
 
-/** Whether this visitor (by ownership hash) has already submitted a star. */
-export async function hasSubmitted(ownerHash: string): Promise<boolean> {
+/**
+ * Whether this visitor has already submitted a star — by ownership hash
+ * (IP + client fingerprint, the soft per-browser deterrent) or by already
+ * owning a star under the same verified GitHub/Roblox identity (a stronger
+ * guarantee: survives a cleared fingerprint, a different browser, or a VPN,
+ * since it's tied to an account that was actually proven to be theirs).
+ */
+export async function hasAlreadySubmitted(ownerHash: string, githubUrl?: string, robloxUrl?: string): Promise<boolean> {
     const stars = await readAll();
-    return stars.some((s) => s.ownerHash === ownerHash);
+    return stars.some(
+        (s) =>
+            s.ownerHash === ownerHash ||
+            (!!githubUrl && s.githubUrl === githubUrl) ||
+            (!!robloxUrl && s.robloxUrl === robloxUrl)
+    );
 }
 
 /** Appends a new visitor star and returns its public representation. */
@@ -90,6 +106,7 @@ export async function addStar(input: {
     githubUrl?: string;
     robloxUrl?: string;
     avatarUrl?: string;
+    verified?: boolean;
     message: string;
     ownerHash: string;
 }): Promise<VisitorStar> {
@@ -99,6 +116,7 @@ export async function addStar(input: {
         githubUrl: input.githubUrl,
         robloxUrl: input.robloxUrl,
         avatarUrl: input.avatarUrl,
+        verified: input.verified,
         message: input.message,
         color: PALETTE[Math.floor(Math.random() * PALETTE.length)],
         position: randomPosition(),

@@ -24,15 +24,23 @@ export function robloxVerificationCode(fingerprint: string, userId: string): str
 
 interface RobloxUserResponse {
     description?: string;
+    hasVerifiedBadge?: boolean;
 }
 
-/** Whether `code` currently appears in that Roblox user's public "About" bio. */
-export async function verifyRobloxBio(userId: string, code: string): Promise<boolean> {
+/**
+ * Checks the bio-code and reads the account's verified-badge status in one
+ * fetch (both come off the same Roblox users endpoint, so submitting a star
+ * doesn't need a second round-trip just to know whether to show the badge).
+ */
+export async function checkRobloxBio(userId: string, code: string): Promise<{ bioVerified: boolean; hasVerifiedBadge: boolean }> {
     try {
         const res = await robloxFetch<RobloxUserResponse>(`https://users.roblox.com/v1/users/${userId}`, { noStore: true });
-        return (res.description ?? '').toUpperCase().includes(code);
+        return {
+            bioVerified: (res.description ?? '').toUpperCase().includes(code),
+            hasVerifiedBadge: !!res.hasVerifiedBadge,
+        };
     } catch (err) {
         console.warn('[robloxVerify] Failed to fetch Roblox profile for verification:', err);
-        return false;
+        return { bioVerified: false, hasVerifiedBadge: false };
     }
 }
