@@ -51,7 +51,12 @@ export default function VisitorStarModal({ star, onClose }: { star: VisitorStar;
                                 )}
                             </div>
                         )}
-                        <p className="text-sm text-on-surface leading-relaxed">{star.message}</p>
+                        <div>
+                            <p className="text-sm text-on-surface leading-relaxed">{star.message}</p>
+                            <p className="text-[10px] text-on-surface-variant/60 uppercase tracking-wide mt-1.5">
+                                {new Date(star.createdAt).toLocaleString()}
+                            </p>
+                        </div>
                     </div>
 
                     {(star.githubUrl || star.robloxUrl) && (

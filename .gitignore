@@ -12,3 +12,7 @@ tsconfig.tsbuildinfo
 # Local Netlify folder
 .netlify
 bun.lock
+
+# Locally-installed agent skills (npx skills add)
+skills-lock.json
+.agents/

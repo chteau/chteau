@@ -69,7 +69,12 @@ export default function StarExplorerSection({ onFocusStar }: { onFocusStar: (sta
                             />
                         )}
                     </div>
-                    <p className="text-sm text-on-surface-variant leading-snug line-clamp-3">{star.message}</p>
+                    <div className="min-w-0">
+                        <p className="text-sm text-on-surface-variant leading-snug line-clamp-3">{star.message}</p>
+                        <p className="text-[10px] text-on-surface-variant/50 uppercase tracking-wide mt-1.5">
+                            {new Date(star.createdAt).toLocaleDateString()}
+                        </p>
+                    </div>
                 </button>
             ))}
         </div>

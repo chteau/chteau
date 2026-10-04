@@ -79,7 +79,12 @@ function VisitorStarPoint({
                                         )}
                                     </div>
                                 )}
-                                <p className="text-on-surface leading-snug">{star.message}</p>
+                                <div>
+                                    <p className="text-on-surface leading-snug">{star.message}</p>
+                                    <p className="text-[9px] text-on-surface-variant/60 uppercase tracking-wide mt-1">
+                                        {new Date(star.createdAt).toLocaleDateString()}
+                                    </p>
+                                </div>
                             </div>
                             {(star.githubUrl || star.robloxUrl) && (
                                 <div className="flex gap-3 pt-0.5">

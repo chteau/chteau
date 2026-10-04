@@ -1,0 +1,65 @@
+---
+title: "Why Roblox Hates Linux"
+date: "2026-10-04"
+excerpt: "With receipts: why Linux users keep getting left out in the cold by Roblox, and what you can still do about it."
+---
+
+Ok so first blog post, let's make it a good one. Been meaning to write this down for a while, every time I bring it up people go "wait, Roblox doesn't work on Linux?" Yeah. Not even an accident. Lowkey one of the pettier things a company this size does, honestly.
+
+## TL;DR
+
+Roblox has never officially supported Linux. Worse, since 2023 they've gone out of their way to **block** the usual workaround (running the Windows client through Wine) because of their anti-cheat. There's an unofficial way back in now (shoutout Sober), but it's community-maintained and could break or get you flagged at any time.
+
+## What actually happened
+
+For years Linux users just ran the normal Windows Roblox client through Wine, basically a layer that translates Windows API calls so Windows apps run on Linux, and it mostly worked fine. Then Roblox rolled out **Hyperion**, their new anti-cheat engine, built by Byfron Technologies, the team Roblox acquired back in October 2022 specifically to fight cheaters.
+
+Hyperion started actively detecting Wine and blocking it outright. Not "didn't bother to support it," it refuses to launch and throws you a straight up "Wine is not supported" message, which is a wild thing to go out of your way to build. That also broke things on Steam Deck, since the Deck runs on Linux + Proton (Valve's own flavor of Wine) under the hood, so a bunch of people lost the ability to play on hardware that worked completely fine the day before. Steam Deck owners, you know, the people just trying to play a game on their handheld, caught strays for no reason.
+
+## Why though
+
+The most useful explanation I found is from an actual Roblox staffer answering people directly on the DevForum, quoted by GamingOnLinux:
+
+> "Unfortunately that answer is essentially 'no.'"
+
+And it basically comes down to this: shipping an actual Linux client means QA, support, and docs on a whole different, more fragmented platform (which distro, which libs, which driver), and that's expensive for how few people would actually use it. Wine support specifically is hard because of anti-cheat too. Hyperion leans on a bunch of undocumented Windows-only behavior that just doesn't exist under Wine, so supporting it would mean weakening those checks, exactly the kind of hole cheaters would love. The Roblox DevForum's own community guide to running Roblox on Linux says as much, quoting a dev who explained Hyperion "uses quite a few tricks that simply don't work on Wine because those undocumented features are, well, not documented."
+
+So it's less "Roblox hates Linux" out of spite and more "Linux support plus a kernel-level anti-cheat just don't really coexist with the resources they want to spend." Still sucks for us though, and honestly a little insulting given how much easier Linux gaming has gotten everywhere else.
+
+## The workaround: Sober
+
+If you're on Linux and still want to play, the community didn't just roll over. The go-to now is [Sober](https://sober.vinegarhq.org/), made by the Vinegar team. Instead of fighting Wine, it runs Roblox's *Android* client in its own lightweight runtime, which sidesteps the whole Windows-anti-cheat-vs-Wine problem. Install's one line if you've got Flatpak:
+
+```
+flatpak install flathub org.vinegarhq.Sober
+```
+
+Worth knowing before you install it though:
+
+- It's closed-source on purpose, basically to make it harder for Roblox to reverse-engineer and block it.
+- It's unofficial and experimental, can break the moment Roblox pushes an update.
+- Nobody, not even the Sober devs, can promise you won't get flagged for using it. Use at your own risk, you know the drill.
+
+If you need Roblox **Studio** specifically (not just the player) for actual dev work, there's a sibling tool called Vinegar that runs it through Wine, but even that comes with a "don't rely on this for anything serious, keep a Windows or Mac box around" warning.
+
+This is part of why I started building [RBX Native](https://github.com/chteau/rbx-native/): a native Roblox Studio-style editor written in Rust with GPUI and wgpu, instead of wrapping Wine. It opens, renders and edits `.rbxl`/`.rbxlx` places with its own parsers, reflection database, and a sandboxed Luau runtime. Still unofficial and early days, but no Wine involved. It just runs, which honestly feels better than it should.
+
+## Where things stand in 2026
+
+Still a hard no on official support. Roblox's own system requirements only list Windows 10/11 and macOS 10.13+. Sober is still the most practical unofficial route, stable enough now that it's basically the default recommendation, but it's still a hobby project running against a company that's explicitly said it doesn't want Linux support to exist. Not exactly a comfortable spot to build your whole setup on, but here we are.
+
+## My take
+
+As someone who ships stuff on Roblox, I get *why* they're doing this. Cheating is a real problem, and Hyperion's whole job is to make it harder. But it still stings that the "solution" is locking out an entire OS instead of, I don't know, shipping a real client like they did for Mac. Linux gaming in general has gotten so much better thanks to Proton and the Steam Deck, and Roblox fighting that instead of just being compatible with it feels like a step backward, lowkey the opposite direction everyone else in gaming is walking right now.
+
+Anyway, if you're stubborn like me and still want to run it on Linux, Sober's your best bet for now. Just don't expect Roblox to ever officially say yes.
+
+## Sources
+
+- [Game Over for Roblox on Linux: The New Anti-Cheat Blocks Wine Usage - It's FOSS](https://itsfoss.com/news/roblox-linux-end/)
+- [Goodbye to Roblox on Linux with their new anti-cheat and Wine blocking - GamingOnLinux](https://gamingonlinux.com/2023/05/goodbye-to-roblox-on-linux-with-their-new-anti-cheat-and-wine-blocking)
+- [Game over for Roblox on Linux / Steam Deck as it's now blocked - GamingOnLinux](https://gamingonlinux.com/2024/03/game-over-for-roblox-on-linux-steam-deck-as-its-now-blocked/)
+- [The Ultimate Guide on How to Run Roblox on Linux (Studio & Player) - Roblox DevForum](https://devforum.roblox.com/t/the-ultimate-guide-on-how-to-run-roblox-on-linux-studio-player/3171920)
+- [Sober - official site](https://sober.vinegarhq.org/)
+- [Sober is a new way to play Roblox on Linux from the Vinegar team - GamingOnLinux](https://gamingonlinux.com/2024/08/sober-is-a-new-way-to-play-roblox-on-linux-from-the-vinegar-team)
+- [Roblox on Linux in 2026: what works and how to play - TechBloat](https://www.techbloat.com/roblox-on-linux-in-2026-what-works-and-how-to-play.html)
