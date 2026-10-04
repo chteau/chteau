@@ -43,13 +43,17 @@ function GrowingNebula({ reducedMotion }: { reducedMotion: boolean }) {
  * if WebGL is unavailable.
  *
  * @param focusedId - The currently selected section (chosen from `NavMenu`), or null for the overview.
+ * @param focusedStarId - A visitor star's id, chosen from the Star Explorer panel — flies the camera to it the
+ *                        same way `focusedId` does for a section, but doesn't drive `SectionPanel`.
  * @param onIntroComplete - Called once the intro (or its reduced-motion/no-WebGL equivalent) has finished.
  */
 export default function GalaxyScene({
     focusedId,
+    focusedStarId,
     onIntroComplete,
 }: {
     focusedId: SectionId | null;
+    focusedStarId?: string | null;
     onIntroComplete?: () => void;
 }) {
     const [reducedMotion, setReducedMotion] = useState(
@@ -118,6 +122,9 @@ export default function GalaxyScene({
         );
     }
 
+    const activeFocusKey = focusedStarId ?? focusedId;
+    const focusedRef = activeFocusKey ? starRefs.current[activeFocusKey] ?? null : null;
+
     return (
         <Canvas
             camera={{ position: (reducedMotion ? ORBIT_START_POS : INTRO_START_POS).toArray(), fov: 50 }}
@@ -132,7 +139,7 @@ export default function GalaxyScene({
                     <FieldGalaxies count={isMobile ? 22 : 46} reducedMotion={reducedMotion} fadingOut={introDone} />
                 )}
                 <GrowingNebula reducedMotion={reducedMotion} />
-                <VisitorStars />
+                <VisitorStars registerRef={registerRef} />
                 {SECTION_STARS.map(star => (
                     <FeatureStar
                         key={star.id}
@@ -140,13 +147,13 @@ export default function GalaxyScene({
                         position={star.position}
                         color={star.color}
                         focused={focusedId === star.id}
-                        dimmed={!!focusedId && focusedId !== star.id}
+                        dimmed={!!(focusedId || focusedStarId) && focusedId !== star.id}
                         reducedMotion={reducedMotion}
                         registerRef={registerRef}
                     />
                 ))}
                 <CameraRig
-                    focusedRef={focusedId ? starRefs.current[focusedId] ?? null : null}
+                    focusedRef={focusedRef}
                     mouse={mouse}
                     reducedMotion={reducedMotion}
                     onIntroComplete={handleIntroComplete}

@@ -1,6 +1,6 @@
 "use client";
 
-import { FolderOpen, Github, Gamepad2, User, Mail, Newspaper, Sparkles, type LucideIcon } from 'lucide-react';
+import { FolderOpen, Github, Gamepad2, User, Mail, Newspaper, Sparkles, Telescope, type LucideIcon } from 'lucide-react';
 import { useCHTEAUSDK } from '../sdk/CHTEAUSDK';
 import type { SectionId } from './galaxy/types';
 
@@ -19,8 +19,9 @@ const ITEM_CLASS =
 /**
  * Discreet bottom-center navigation — the feature stars in the galaxy are
  * purely decorative, so this is how sections actually get opened. Every
- * item (including Blog) just opens its `SectionPanel`, same as the others;
- * "Add a Star" is the one non-section action, opening the visitor star form.
+ * item (including Blog) just opens its `SectionPanel`, same as the others.
+ * "Star Explorer" (browse/find visitor stars) and "Add a Star" sit after
+ * the divider as the two visitor-star actions, open vs. contribute.
  */
 export default function NavMenu({
     visible,
@@ -48,6 +49,11 @@ export default function NavMenu({
             ))}
 
             <div className="w-px h-5 bg-white/15 mx-1" />
+
+            <button onClick={() => onSelect('stars')} className={ITEM_CLASS} id="nav-btn-stars">
+                <Telescope size={13} />
+                <span className="hidden sm:inline">{sdk.t('star_stars')}</span>
+            </button>
 
             <button onClick={onAddStar} className={ITEM_CLASS} id="nav-btn-add-star">
                 <Sparkles size={13} />

@@ -5,18 +5,7 @@ import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { createFlareTexture } from './textures';
-
-interface VisitorStar {
-    id: string;
-    githubUrl?: string;
-    robloxUrl?: string;
-    avatarUrl?: string;
-    verified?: boolean;
-    message: string;
-    color: string;
-    position: [number, number, number];
-    createdAt: string;
-}
+import type { VisitorStar } from '../../lib/stars';
 
 // ~55% smaller than the decorative feature stars' 0.5 base scale, same glow texture/twinkle/hover-boost behavior.
 const BASE_SCALE = 0.22;
@@ -25,14 +14,21 @@ function VisitorStarPoint({
     star,
     selected,
     onSelect,
+    registerRef,
 }: {
     star: VisitorStar;
     selected: boolean;
     onSelect: (id: string | null) => void;
+    registerRef: (id: string, ref: React.RefObject<THREE.Sprite | null>) => void;
 }) {
     const spriteRef = useRef<THREE.Sprite>(null!);
     const [hovered, setHovered] = useState(false);
     const texture = useMemo(() => createFlareTexture(star.color), [star.color]);
+
+    // Reports its own ref so the camera rig can fly to it when opened from the Star Explorer panel.
+    useEffect(() => {
+        registerRef(star.id, spriteRef);
+    }, [star.id, registerRef]);
 
     useFrame(({ clock }) => {
         const t = clock.getElapsedTime();
@@ -116,15 +112,23 @@ function VisitorStarPoint({
  * `AddStarForm` fires `visitor-star-added` (it lives outside the Canvas, so
  * a window event is the simplest bridge). Unlike the 5 decorative feature
  * stars, these are interactive: hover previews, click opens the visitor's
- * message and links.
+ * message and links. Each also reports its ref up via `registerRef` (same
+ * mechanism `FeatureStar` uses) so the camera rig can fly to one chosen
+ * from the Star Explorer panel.
+ *
+ * @param registerRef - Reports a star's sprite ref, keyed by its id, up to `GalaxyScene`'s shared ref registry.
  */
-export default function VisitorStars() {
+export default function VisitorStars({
+    registerRef,
+}: {
+    registerRef: (id: string, ref: React.RefObject<THREE.Sprite | null>) => void;
+}) {
     const [stars, setStars] = useState<VisitorStar[]>([]);
     const [selectedId, setSelectedId] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchStars = () => {
-            fetch('/api/stars')
+            fetch('/api/stars', { cache: 'no-store' })
                 .then((r) => (r.ok ? r.json() : Promise.reject()))
                 .then((data) => setStars(Array.isArray(data.stars) ? data.stars : []))
                 .catch(() => {});
@@ -138,7 +142,13 @@ export default function VisitorStars() {
     return (
         <group>
             {stars.map((star) => (
-                <VisitorStarPoint key={star.id} star={star} selected={selectedId === star.id} onSelect={setSelectedId} />
+                <VisitorStarPoint
+                    key={star.id}
+                    star={star}
+                    selected={selectedId === star.id}
+                    onSelect={setSelectedId}
+                    registerRef={registerRef}
+                />
             ))}
         </group>
     );

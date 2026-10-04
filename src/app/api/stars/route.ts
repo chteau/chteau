@@ -19,10 +19,10 @@ function clientIp(request: Request): string {
     );
 }
 
-/** Public list of every visitor-submitted star. */
+/** Public list of every visitor-submitted star. Explicitly uncached — a stale list here means a freshly-added star doesn't show up. */
 export async function GET() {
     const stars = await listPublicStars();
-    return NextResponse.json({ stars });
+    return NextResponse.json({ stars }, { headers: { 'Cache-Control': 'no-store' } });
 }
 
 /**

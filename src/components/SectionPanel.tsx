@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect } from 'react';
-import { ArrowLeft, FolderOpen, Gamepad2, Github, Mail, Newspaper, User, X, type LucideIcon } from 'lucide-react';
+import { ArrowLeft, FolderOpen, Gamepad2, Github, Mail, Newspaper, Telescope, User, X, type LucideIcon } from 'lucide-react';
 import { useCHTEAUSDK } from '../sdk/CHTEAUSDK';
 import type { SectionId } from './galaxy/types';
+import type { VisitorStar } from '../lib/stars';
 import ProjectsSection from './sections/ProjectsSection';
 import GitHubSection from './sections/GitHubSection';
 import RobloxSection from './sections/RobloxSection';
 import BioSection from './sections/BioSection';
 import BlogSection from './sections/BlogSection';
+import StarExplorerSection from './sections/StarExplorerSection';
 
 const SECTION_ICON: Record<SectionId, LucideIcon> = {
     projects: FolderOpen,
@@ -17,14 +19,26 @@ const SECTION_ICON: Record<SectionId, LucideIcon> = {
     bio: User,
     contact: Mail,
     blog: Newspaper,
+    stars: Telescope,
 };
 
 /**
  * Glassmorphic content panel shown once the camera has arrived at a focused
  * feature star. Renders the matching section component and closes back to
  * the galaxy overview via its button or the Escape key.
+ *
+ * @param onFocusStar - Only used by the `stars` section: hands a picked visitor star up to `GalaxyExperience`,
+ *                      which flies the camera to it and opens `VisitorStarModal`.
  */
-export default function SectionPanel({ sectionId, onClose }: { sectionId: SectionId; onClose: () => void }) {
+export default function SectionPanel({
+    sectionId,
+    onClose,
+    onFocusStar,
+}: {
+    sectionId: SectionId;
+    onClose: () => void;
+    onFocusStar: (star: VisitorStar) => void;
+}) {
     const sdk = useCHTEAUSDK();
     const Icon = SECTION_ICON[sectionId];
 
@@ -80,6 +94,7 @@ export default function SectionPanel({ sectionId, onClose }: { sectionId: Sectio
                         <BioSection initialTab={sectionId === 'contact' ? 'contact' : 'origin'} />
                     )}
                     {sectionId === 'blog' && <BlogSection />}
+                    {sectionId === 'stars' && <StarExplorerSection onFocusStar={onFocusStar} />}
                 </div>
             </div>
         </div>

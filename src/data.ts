@@ -12,6 +12,7 @@ export const TRANSLATIONS = {
         star_bio: "About Me",
         star_contact: "Contact",
         star_blog: "Blog",
+        star_stars: "Star Explorer",
 
         welcome_title: "Cheeteau",
         welcome_subtitle: "Full-Stack Developer Portfolio",
@@ -39,6 +40,8 @@ export const TRANSLATIONS = {
         blog_title: "Blog",
         blog_empty: "No posts yet — check back soon.",
 
+        stars_explorer_empty: "No stars yet — be the first to add one.",
+
         comments_title: "Comments",
         comments_signin: "Sign in with GitHub to comment",
         comments_signout: "Sign out",
@@ -54,6 +57,7 @@ export const TRANSLATIONS = {
         star_bio: "À propos",
         star_contact: "Contact",
         star_blog: "Blog",
+        star_stars: "Étoiles",
 
         welcome_title: "Cheeteau",
         welcome_subtitle: "Portfolio de Développeur Full-Stack",
@@ -81,6 +85,8 @@ export const TRANSLATIONS = {
         blog_title: "Blog",
         blog_empty: "Aucun article pour l'instant — revenez bientôt.",
 
+        stars_explorer_empty: "Aucune étoile pour l'instant — soyez le premier à en ajouter une.",
+
         comments_title: "Commentaires",
         comments_signin: "Connectez-vous avec GitHub pour commenter",
         comments_signout: "Se déconnecter",
@@ -96,6 +102,7 @@ export const TRANSLATIONS = {
         star_bio: "Diwar-benn",
         star_contact: "Darempred",
         star_blog: "Blog",
+        star_stars: "Stered",
 
         welcome_title: "Cheeteau",
         welcome_subtitle: "Lañser Raktresoù Full-Stack",
@@ -122,6 +129,8 @@ export const TRANSLATIONS = {
 
         blog_title: "Blog",
         blog_empty: "N'eus pennad ebet c'hoazh — distroit a-benn nebeut.",
+
+        stars_explorer_empty: "N'eus steredenn ebet c'hoazh — bezit an hini gentañ da ouzhpennañ unan.",
 
         comments_title: "Evezhiadennoù",
         comments_signin: "Kevreit gant GitHub evit evezhiañ",
