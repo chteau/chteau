@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { Github } from 'lucide-react';
 import { useCHTEAUSDK } from '../sdk/CHTEAUSDK';
+import { formatReadableDate } from '../lib/date';
 
 interface Comment {
     id: string;
@@ -121,9 +122,16 @@ export default function BlogComments({ slug }: { slug: string }) {
                             )}
                             <div>
                                 <div className="flex items-baseline gap-2">
-                                    <span className="text-xs font-bold text-on-surface">{c.authorName}</span>
+                                    <a
+                                        href={`https://github.com/${c.authorLogin}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs font-bold text-on-surface hover:text-primary transition-colors"
+                                    >
+                                        {c.authorName}
+                                    </a>
                                     <span className="text-[10px] text-on-surface-variant/60">
-                                        {new Date(c.createdAt).toLocaleDateString()}
+                                        {formatReadableDate(c.createdAt)}
                                     </span>
                                 </div>
                                 <p className="text-sm text-on-surface-variant mt-1 leading-relaxed">{c.body}</p>

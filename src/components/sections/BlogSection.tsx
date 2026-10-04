@@ -5,6 +5,8 @@ import { MDXRemote, type MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { ArrowLeft, Newspaper } from 'lucide-react';
 import { useCHTEAUSDK } from '../../sdk/CHTEAUSDK';
 import BlogComments from '../BlogComments';
+import BlogReactions from '../BlogReactions';
+import { formatReadableDate } from '../../lib/date';
 import type { BlogPostMeta } from '../../lib/blog';
 
 const PROSE_CLASS =
@@ -91,13 +93,21 @@ export default function BlogSection() {
                             <h1 className="font-display text-2xl sm:text-3xl font-medium text-white" style={{ letterSpacing: '0.02em' }}>
                                 {post.title}
                             </h1>
-                            {post.date && <p className="text-xs text-on-surface-variant mt-2 uppercase tracking-wide">{post.date}</p>}
+                            {post.date && (
+                                <p className="text-xs text-on-surface-variant mt-2 uppercase tracking-wide">
+                                    {formatReadableDate(post.date)}
+                                </p>
+                            )}
 
                             <div className={`${PROSE_CLASS} mt-8`}>
                                 <MDXRemote {...post.mdxSource} />
                             </div>
 
-                            <div className="mt-14 pt-8 border-t border-outline/20">
+                            <div className="mt-10 pt-6 border-t border-outline/20">
+                                <BlogReactions slug={post.slug} />
+                            </div>
+
+                            <div className="mt-10 pt-8 border-t border-outline/20">
                                 <BlogComments slug={post.slug} />
                             </div>
                         </div>
@@ -156,7 +166,7 @@ export default function BlogSection() {
                     id={`blog-post-link-${p.slug}`}
                 >
                     <h2 className="text-lg font-bold text-on-surface">{p.title}</h2>
-                    {p.date && <p className="text-xs text-on-surface-variant mt-1">{p.date}</p>}
+                    {p.date && <p className="text-xs text-on-surface-variant mt-1">{formatReadableDate(p.date)}</p>}
                     {p.excerpt && <p className="text-sm text-on-surface-variant mt-2">{p.excerpt}</p>}
                 </button>
             ))}
