@@ -40,7 +40,8 @@ export default function FeatureStar({ id, position, color, focused, dimmed, redu
 
         const twinkle = 0.88 + Math.sin(t * 1.8 + position[0] * 12.3) * 0.12;
         const focusBoost = focused ? 1.15 : 1;
-        const scale = 0.85 * twinkle * focusBoost;
+        // Smaller than before (was 0.85) so the 5 feature stars don't dominate as visitor stars accumulate in the same galaxy.
+        const scale = 0.5 * twinkle * focusBoost;
         spriteRef.current.scale.set(scale, scale, 1);
 
         const mat = spriteRef.current.material as THREE.SpriteMaterial;
