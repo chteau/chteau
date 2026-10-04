@@ -28,16 +28,19 @@ const BLOB_KEY = 'all';
 // of ours at a glance. A few shades for twinkle variety, all clearly green.
 const PALETTE = ['#4ade80', '#22c55e', '#86efac', '#34d399'];
 
-/** Random point in the same shell FieldGalaxies/BackgroundStars occupy, well clear of our own nebula. */
+/**
+ * Random point scattered across OUR galaxy's spiral — the same neighborhood
+ * the 5 feature stars live in (sectionStars.ts) and within the camera's
+ * normal resting-orbit radius, not the far shell of decoy galaxies/
+ * background stars. A flattened disk (small Y jitter, wide XZ spread),
+ * matching the nebula's own flat spiral shape, so a visitor star reads as
+ * part of the galaxy and actually stays visible while orbiting it.
+ */
 function randomPosition(): [number, number, number] {
     const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos(2 * Math.random() - 1);
-    const dist = 18 + Math.random() * 27;
-    return [
-        Math.sin(phi) * Math.cos(theta) * dist,
-        Math.cos(phi) * 0.8 * dist,
-        Math.sin(phi) * Math.sin(theta) * dist,
-    ];
+    const radius = 3 + Math.random() * 6;
+    const height = (Math.random() - 0.5) * 2.4;
+    return [Math.cos(theta) * radius, height, Math.sin(theta) * radius];
 }
 
 /** Derives the per-visitor ownership hash from their IP and client fingerprint. */
