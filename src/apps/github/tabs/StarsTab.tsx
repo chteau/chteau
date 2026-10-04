@@ -112,7 +112,6 @@ export function StarsTab({ t }: Props) {
         <div className="space-y-5">
             {/* Header */}
             <div>
-                <div className="text-xs text-on-surface/65 font-bold tracking-widest mb-1">{t('stars_entry')}</div>
                 <h2 className="text-2xl text-on-primary-container uppercase tracking-wider font-extrabold border-b border-outline/40 pb-2">
                     {t('stars_title')}
                 </h2>
@@ -134,7 +133,7 @@ export function StarsTab({ t }: Props) {
                                     <img
                                         src={repo.owner.avatar_url}
                                         alt={repo.owner.login}
-                                        className="w-4 h-4 rounded-sm shrink-0"
+                                        className="w-4 h-4 shrink-0"
                                     />
                                     <a
                                         href={repo.html_url}
@@ -167,7 +166,7 @@ export function StarsTab({ t }: Props) {
                                 {repo.language && (
                                     <span className="flex items-center gap-1 text-xs text-on-surface/70">
                                         <span
-                                            className="w-2 h-2 rounded-full inline-block"
+                                            className="w-2 h-2 inline-block"
                                             style={{ backgroundColor: LANGUAGE_COLORS[repo.language] ?? '#888' }}
                                         />
                                         {repo.language}

@@ -2,10 +2,11 @@
     "greeting": "Hello",
     "section_playing": "Continue Playing",
     "games_count": "games",
+    "section_studios": "Studios I've Worked For",
+    "section_spotlight": "Spotlight",
     "btn_play": "Play",
     "label_playing": "playing",
     "label_visits": "visits",
-    "status_label": "ROBLOX VIEWER",
     "label_contributed_visits": "contributed visits",
     "loading": "Fetching Roblox data...",
     "error": "Failed to fetch Roblox data."

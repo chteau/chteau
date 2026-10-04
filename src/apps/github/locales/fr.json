@@ -1,14 +1,11 @@
 {
-    "tab_profile": "001_PROFIL",
-    "tab_repos": "010_DÉPÔTS",
-    "tab_stars": "011_ÉTOILES",
-    "profile_title": "PROFIL // CHTEAU",
-    "profile_entry": "ENTRÉE #001_PROFIL",
-    "repos_title": "DÉPÔTS",
-    "repos_entry": "ENTRÉE #010_DÉPÔTS",
+    "tab_profile": "Profil",
+    "tab_repos": "Dépôts",
+    "tab_stars": "Étoiles",
+    "profile_title": "Profil GitHub",
+    "repos_title": "Dépôts",
     "repos_subtitle": "Dépôts publics, triés par dernier push.",
-    "stars_title": "ÉTOILÉS",
-    "stars_entry": "ENTRÉE #011_ÉTOILÉS",
+    "stars_title": "Étoilés",
     "stars_subtitle": "Dépôts étoilés par ce compte.",
     "loading": "Récupération des données GitHub...",
     "error": "Échec de récupération des données GitHub.",
@@ -23,7 +20,5 @@
     "label_contribs": "Contributions",
     "label_total": "total",
     "label_forked": "Forké",
-    "label_stars": "Étoiles",
-    "label_forks": "Forks",
     "label_readme": "README.md"
 }

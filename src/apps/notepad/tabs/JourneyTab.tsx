@@ -11,9 +11,6 @@ export function JourneyTab({ t, entries }: Props) {
     return (
         <div className="space-y-4">
             <div className="mb-6">
-                <div className="text-xs text-on-surface/65 font-bold tracking-widest mb-1">
-                    ENTRY #010_TIMELINE
-                </div>
                 <h2 className="text-2xl text-on-primary-container uppercase tracking-wider font-extrabold border-b border-outline/40 pb-2">
                     {t('journey_title')}
                 </h2>
@@ -22,31 +19,40 @@ export function JourneyTab({ t, entries }: Props) {
                 </div>
             </div>
 
-            <div className="relative max-w-xl">
-                <div className="absolute left-1.75 top-2 bottom-2 w-px bg-outline/20" />
-                <div className="space-y-6">
-                    {entries.map((item, idx) => (
-                        <div key={idx} className="flex gap-4 relative">
-                            <div className="w-4 h-4 rounded-full border border-outline/50 bg-gray-200 shrink-0 mt-0.5 relative z-10" />
-                            <div>
-                                <div className="flex items-center gap-2 mb-1">
-                                    <span className={`text-xs font-bold px-1.5 py-0.5 border ${idx === entries.length - 1
-                                        ? 'border-outline text-on-primary-container bg-on-primary-container/10'
-                                        : 'border-outline/40 text-on-surface/50'
-                                        }`}>
-                                        {item.year}
-                                    </span>
-                                    <span className="text-xs font-bold text-on-surface uppercase tracking-wide">
-                                        {item.title}
-                                    </span>
-                                </div>
-                                <p className="text-sm text-on-surface-variant leading-relaxed">
-                                    {item.desc}
-                                </p>
+            <div className="grid sm:grid-cols-2 gap-4">
+                {entries.map((item, idx) => {
+                    const isLast = idx === entries.length - 1;
+                    return (
+                        <div
+                            key={idx}
+                            className={`glass-chip p-4 hover:border-primary/50 transition-colors ${isLast ? 'sm:col-span-2' : ''}`}
+                        >
+                            <div className="flex items-center gap-2 mb-1.5">
+                                <span
+                                    className={`w-2.5 h-2.5 shrink-0 border ${
+                                        isLast ? 'bg-primary border-primary' : 'bg-primary-container/60 border-primary/50'
+                                    }`}
+                                    style={isLast ? { boxShadow: '0 0 10px 1px var(--color-primary)' } : undefined}
+                                />
+                                <span
+                                    className={`text-xs font-bold px-1.5 py-0.5 border ${
+                                        isLast
+                                            ? 'border-primary/60 text-white bg-primary/80'
+                                            : 'border-outline/40 text-on-primary-container bg-primary-container/10'
+                                    }`}
+                                >
+                                    {item.year}
+                                </span>
+                                <span className="text-xs font-bold text-on-surface uppercase tracking-wide">
+                                    {item.title}
+                                </span>
                             </div>
+                            <p className="text-sm text-on-surface-variant leading-relaxed">
+                                {item.desc}
+                            </p>
                         </div>
-                    ))}
-                </div>
+                    );
+                })}
             </div>
         </div>
     );

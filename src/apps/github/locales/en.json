@@ -1,14 +1,11 @@
 {
-    "tab_profile": "001_PROFILE",
-    "tab_repos": "010_REPOS",
-    "tab_stars": "011_STARS",
-    "profile_title": "PROFILE // CHTEAU",
-    "profile_entry": "ENTRY #001_PROFILE",
-    "repos_title": "REPOSITORIES",
-    "repos_entry": "ENTRY #010_REPOS",
+    "tab_profile": "Profile",
+    "tab_repos": "Repos",
+    "tab_stars": "Stars",
+    "profile_title": "GitHub Profile",
+    "repos_title": "Repositories",
     "repos_subtitle": "Public repositories, sorted by last push.",
-    "stars_title": "STARRED",
-    "stars_entry": "ENTRY #011_STARS",
+    "stars_title": "Starred",
     "stars_subtitle": "Repositories starred by this account.",
     "loading": "Fetching GitHub data...",
     "error": "Failed to fetch GitHub data.",
@@ -23,7 +20,5 @@
     "label_contribs": "Contributions",
     "label_total": "total",
     "label_forked": "Forked",
-    "label_stars": "Stars",
-    "label_forks": "Forks",
     "label_readme": "README.md"
 }

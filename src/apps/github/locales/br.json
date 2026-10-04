@@ -1,14 +1,11 @@
 {
-    "tab_profile": "001_PROFIL",
-    "tab_repos": "010_DEPOIOÙ",
-    "tab_stars": "011_STEREDOÙ",
-    "profile_title": "PROFIL // CHTEAU",
-    "profile_entry": "EINTRAD #001_PROFIL",
-    "repos_title": "DEPOIOÙ",
-    "repos_entry": "EINTRAD #010_DEPOIOÙ",
+    "tab_profile": "Profil",
+    "tab_repos": "Depoioù",
+    "tab_stars": "Steredoù",
+    "profile_title": "Profil GitHub",
+    "repos_title": "Depoioù",
     "repos_subtitle": "Depoioù foran, rummget dre an eurveaj ziwezhañ.",
-    "stars_title": "STEREDOÙ",
-    "stars_entry": "EINTRAD #011_STEREDOÙ",
+    "stars_title": "Steredoù",
     "stars_subtitle": "Depoioù steredoù gant ar gont-mañ.",
     "loading": "O tizout roadennoù GitHub...",
     "error": "C'hwitet eo bet dizout roadennoù GitHub.",
@@ -23,7 +20,5 @@
     "label_contribs": "Degasadennoù",
     "label_total": "hollad",
     "label_forked": "Forket",
-    "label_stars": "Steredoù",
-    "label_forks": "Forks",
     "label_readme": "README.md"
 }

@@ -1,8 +1,16 @@
 // Dependencies
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Rethink_Sans } from "next/font/google";
+import Providers from "./providers";
 import "./globals.css";
 
 const BASE_URL = "https://chteau.bzh";
+
+const rethinkSans = Rethink_Sans({
+    subsets: ["latin"],
+    variable: "--font-display",
+    weight: ["500", "600", "700", "800"],
+});
 
 export const metadata: Metadata = {
     title: "Cheeteau | Portfolio",
@@ -12,7 +20,7 @@ export const metadata: Metadata = {
         description: "Full-stack developer, familiar with Roblox, web development, and backend systems.",
         url: BASE_URL,
         siteName: "Cheeteau | Portfolio",
-        images: [{ url: `${BASE_URL}/screen.png`, width: 1280, height: 720, alt: "Cheeteau Portfolio" }],
+        images: [{ url: `${BASE_URL}/screen.png`, width: 1645, height: 984, alt: "Cheeteau Portfolio" }],
         type: "website",
     },
     twitter: {
@@ -21,7 +29,10 @@ export const metadata: Metadata = {
         description: "Full-stack developer, familiar with Roblox, web development, and backend systems.",
         images: [`${BASE_URL}/screen.png`],
     },
-    themeColor: "#3a78d8",
+};
+
+export const viewport: Viewport = {
+    themeColor: "#05020c",
 };
 
 /**
@@ -36,8 +47,8 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body className="antialiased">
-                {children}
+            <body className={`antialiased ${rethinkSans.variable}`}>
+                <Providers>{children}</Providers>
             </body>
         </html>
     );

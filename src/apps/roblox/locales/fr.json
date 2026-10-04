@@ -2,10 +2,11 @@
     "greeting": "Bonjour",
     "section_playing": "Continuer à jouer",
     "games_count": "jeux",
+    "section_studios": "Studios avec qui j'ai travaillé",
+    "section_spotlight": "À la une",
     "btn_play": "Jouer",
     "label_playing": "en jeu",
     "label_visits": "visites",
-    "status_label": "VISIONNEUSE ROBLOX",
     "label_contributed_visits": "visites contribuées",
     "loading": "Chargement des données Roblox...",
     "error": "Échec du chargement."

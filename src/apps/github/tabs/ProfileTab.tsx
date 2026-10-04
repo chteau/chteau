@@ -65,18 +65,22 @@ interface Props {
 
 const CACHE_KEY = 'github:profile';
 
+/** Contribution-intensity scale, dark-empty to bright-primary, matching the site's purple theme instead of GitHub's green. */
+const CONTRIB_SCALE = ['rgba(192, 140, 255, 0.08)', '#3c2566', '#6a35b8', '#9b4ce0', '#c05eff', '#e0b3ff'];
+
 /**
- * Maps a raw contribution count to its GitHub-style dark-mode hex colour.
+ * Maps a raw contribution count to a step on the theme's purple scale.
  *
  * @param count - Number of contributions on a given day
- * @returns Hex colour string
+ * @returns Hex/rgba colour string
  */
 function contribColor(count: number): string {
-    if (count === 0) return '#ebedf0';
-    if (count <= 3) return '#9be9a8';
-    if (count <= 6) return '#40c463';
-    if (count <= 9) return '#30a14e';
-    return '#216e39';
+    if (count === 0) return CONTRIB_SCALE[0];
+    if (count <= 2) return CONTRIB_SCALE[1];
+    if (count <= 5) return CONTRIB_SCALE[2];
+    if (count <= 9) return CONTRIB_SCALE[3];
+    if (count <= 15) return CONTRIB_SCALE[4];
+    return CONTRIB_SCALE[5];
 }
 
 // GitHub profile READMEs commonly wrap images/badges in raw HTML (`<div
@@ -185,7 +189,6 @@ export function ProfileTab({ t }: Props) {
         <div className="space-y-5">
             {/* Header */}
             <div>
-                <div className="text-xs text-on-surface/65 font-bold tracking-widest mb-1">{t('profile_entry')}</div>
                 <h2 className="text-2xl text-on-primary-container uppercase tracking-wider font-extrabold border-b border-outline/40 pb-2">
                     {t('profile_title')}
                 </h2>
@@ -255,7 +258,7 @@ export function ProfileTab({ t }: Props) {
                     <div className="flex flex-wrap gap-2">
                         {orgs.map(org => (
                             <div key={org.id} className="flex items-center gap-1.5 border border-outline/30 bg-surface-container-low px-2 py-1.5">
-                                <img src={org.avatar_url} alt={org.login} className="w-4 h-4 rounded-sm" />
+                                <img src={org.avatar_url} alt={org.login} className="w-4 h-4" />
                                 <span className="text-xs text-on-surface-variant">{org.login}</span>
                             </div>
                         ))}
@@ -268,7 +271,7 @@ export function ProfileTab({ t }: Props) {
                 <h3 className="text-xs font-bold text-on-surface/65 tracking-widest uppercase mb-2">
                     {t('label_contribs')} {currentYear}
                     {hasToken && total > 0 && (
-                        <span className="ml-2 text-[#39d353] normal-case">— {total} {t('label_total')}</span>
+                        <span className="ml-2 text-primary normal-case">— {total} {t('label_total')}</span>
                     )}
                 </h3>
 
@@ -277,26 +280,33 @@ export function ProfileTab({ t }: Props) {
                         <span className="text-xs text-on-surface/60 uppercase tracking-widest">{t('no_token')}</span>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto pb-1">
+                    <div className="overflow-x-auto pb-1 border border-outline/20 bg-surface-container-low p-3">
                         <div className="flex gap-0.75">
                             {weeks.map((week, wi) => (
                                 <div key={wi} className="flex flex-col gap-0.75">
-                                    {week.contributionDays.map((day, di) => (
-                                        <div
-                                            key={di}
-                                            title={`${day.date}: ${day.contributionCount} contribution${day.contributionCount !== 1 ? 's' : ''}`}
-                                            className="w-2.5 h-2.5 rounded-xs cursor-default"
-                                            style={{ backgroundColor: contribColor(day.contributionCount) }}
-                                        />
-                                    ))}
+                                    {week.contributionDays.map((day, di) => {
+                                        const color = contribColor(day.contributionCount);
+                                        const lit = day.contributionCount > 9;
+                                        return (
+                                            <div
+                                                key={di}
+                                                title={`${day.date}: ${day.contributionCount} contribution${day.contributionCount !== 1 ? 's' : ''}`}
+                                                className="w-2.5 h-2.5 cursor-default border border-outline/10"
+                                                style={{
+                                                    backgroundColor: color,
+                                                    boxShadow: lit ? `0 0 4px 0 ${color}` : undefined,
+                                                }}
+                                            />
+                                        );
+                                    })}
                                 </div>
                             ))}
                         </div>
                         {/* Legend */}
-                        <div className="flex items-center gap-1.5 mt-2 text-xs text-on-surface/60 select-none">
+                        <div className="flex items-center gap-1.5 mt-2.5 text-xs text-on-surface/60 select-none">
                             <span>Less</span>
-                            {['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'].map(c => (
-                                <div key={c} className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: c }} />
+                            {CONTRIB_SCALE.map((c) => (
+                                <div key={c} className="w-2.5 h-2.5 border border-outline/10" style={{ backgroundColor: c }} />
                             ))}
                             <span>More</span>
                         </div>
@@ -311,7 +321,7 @@ export function ProfileTab({ t }: Props) {
                         {t('label_readme')}
                     </h3>
                     <div
-                        className="border border-outline/20 bg-surface-container-low p-4 max-h-72 overflow-y-auto scrollbar-custom text-sm text-on-surface-variant leading-relaxed [&_h1]:text-base [&_h1]:font-bold [&_h1]:text-on-primary-container [&_h1]:border-b [&_h1]:border-outline/30 [&_h1]:pb-1 [&_h1]:mt-4 [&_h1]:mb-2 [&_h2]:text-sm [&_h2]:font-bold [&_h2]:text-on-primary-container [&_h2]:border-b [&_h2]:border-outline/20 [&_h2]:pb-1 [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:text-xs [&_h3]:font-bold [&_h3]:text-on-primary-container [&_h3]:uppercase [&_h3]:tracking-wide [&_h3]:mt-4 [&_h3]:mb-1 [&_p]:my-2 [&_a]:text-[#39d353] [&_a]:hover:underline [&_strong]:text-on-surface [&_strong]:font-bold [&_code]:bg-surface-container [&_code]:px-1 [&_code]:text-on-primary-container [&_code]:font-mono [&_code]:text-[10px] [&_pre]:bg-surface-container [&_pre]:border [&_pre]:border-outline/20 [&_pre]:p-3 [&_pre]:overflow-x-auto [&_pre]:my-2 [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-1 [&_li]:my-0.5 [&_hr]:border-outline/20 [&_hr]:my-3 [&_img]:max-w-full [&_img]:inline-block [&_blockquote]:border-l-2 [&_blockquote]:border-outline/30 [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:opacity-80 [&_del]:opacity-40 [&_table]:w-full [&_table]:text-xs [&_th]:border [&_th]:border-outline/20 [&_th]:p-1 [&_td]:border [&_td]:border-outline/20 [&_td]:p-1"
+                        className="border border-outline/20 bg-surface-container-low p-4 max-h-72 overflow-y-auto scrollbar-custom text-sm text-on-surface-variant leading-relaxed [&_h1]:text-base [&_h1]:font-bold [&_h1]:text-on-primary-container [&_h1]:border-b [&_h1]:border-outline/30 [&_h1]:pb-1 [&_h1]:mt-4 [&_h1]:mb-2 [&_h2]:text-sm [&_h2]:font-bold [&_h2]:text-on-primary-container [&_h2]:border-b [&_h2]:border-outline/20 [&_h2]:pb-1 [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:text-xs [&_h3]:font-bold [&_h3]:text-on-primary-container [&_h3]:uppercase [&_h3]:tracking-wide [&_h3]:mt-4 [&_h3]:mb-1 [&_p]:my-2 [&_a]:text-primary [&_a]:hover:underline [&_strong]:text-on-surface [&_strong]:font-bold [&_code]:bg-surface-container [&_code]:px-1 [&_code]:text-on-primary-container [&_code]:font-mono [&_code]:text-[10px] [&_pre]:bg-surface-container [&_pre]:border [&_pre]:border-outline/20 [&_pre]:p-3 [&_pre]:overflow-x-auto [&_pre]:my-2 [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-1 [&_li]:my-0.5 [&_hr]:border-outline/20 [&_hr]:my-3 [&_img]:max-w-full [&_img]:inline-block [&_blockquote]:border-l-2 [&_blockquote]:border-outline/30 [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:opacity-80 [&_del]:opacity-40 [&_table]:w-full [&_table]:text-xs [&_th]:border [&_th]:border-outline/20 [&_th]:p-1 [&_td]:border [&_td]:border-outline/20 [&_td]:p-1"
                         dangerouslySetInnerHTML={{ __html: readmeHtml }}
                     />
                 </div>

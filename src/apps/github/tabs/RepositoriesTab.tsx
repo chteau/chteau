@@ -110,7 +110,6 @@ export function RepositoriesTab({ t }: Props) {
         <div className="space-y-5">
             {/* Header */}
             <div>
-                <div className="text-xs text-on-surface/65 font-bold tracking-widest mb-1">{t('repos_entry')}</div>
                 <h2 className="text-2xl text-on-primary-container uppercase tracking-wider font-extrabold border-b border-outline/40 pb-2">
                     {t('repos_title')}
                 </h2>
@@ -165,7 +164,7 @@ export function RepositoriesTab({ t }: Props) {
                                 {repo.language && (
                                     <span className="flex items-center gap-1 text-xs text-on-surface/70">
                                         <span
-                                            className="w-2 h-2 rounded-full inline-block"
+                                            className="w-2 h-2 inline-block"
                                             style={{ backgroundColor: LANGUAGE_COLORS[repo.language] ?? '#888' }}
                                         />
                                         {repo.language}

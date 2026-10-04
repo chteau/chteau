@@ -4,6 +4,7 @@ import prevPortfolioImg from './images/portfolio.png';
 import heimdallPreviewImg from './images/heimdall.png';
 import robloxSupabasePreviewImg from './images/roblox-supabase.png';
 import fragmentPreviewImg from './images/fragment.png';
+import rbxNativePreviewImg from './images/rbx-native.png';
 
 /**
  * A single project entry displayed in the Projects explorer.
@@ -109,7 +110,15 @@ export const PROJECTS: Project[] = [
         description: 'Fragment is a simple module I made to manage Roblox\'s imperative UI instance system inspired by React. It currently supports state management, effects, declarative rendering, globals stores which allow you to build reactive user interfaces whilst still using default Roblox\'s UI components.',
         tags: ['Roblox', 'Luau'],
         thumbnail: fragmentPreviewImg.src,
-        appUrl: 'https://github.com/chteau/Fragment',
+        appUrl: 'https://chteau.github.io/Fragment/',
         githubUrl: 'https://github.com/chteau/fragment',
+    },
+    {
+        id: 'rbx-native',
+        title: 'RBX Native',
+        description: "Unofficial, native Roblox Studio–style editor written in Rust with GPUI and wgpu. It opens, renders and edits .rbxl/.rbxlx places, and ships its own parsers, reflection database and sandboxed Luau runtime.",
+        tags: ['Roblox', 'Rust', 'GPUI', 'wgpu', 'Luau'],
+        thumbnail: rbxNativePreviewImg.src,
+        githubUrl: 'https://github.com/chteau/rbx-native',
     }
 ];

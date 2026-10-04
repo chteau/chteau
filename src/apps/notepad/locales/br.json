@@ -1,16 +1,26 @@
 {
-  "app_title": "Chteau.txt - Kombod-skrivañ",
-  "tab_bio": "000_BIO",
-  "tab_journey": "010_HENT",
-  "tab_skills": "202_AMPARANTEZIOÙ",
-  "tab_contact": "003_DAREMPRED",
-  "bio_title": "BIO // CHEETEAU",
+  "tab_bio": "Bio",
+  "tab_journey": "Hent",
+  "tab_skills": "Amparantezioù",
+  "tab_contact": "Darempred",
+  "bio_title": "Diwar-benn",
   "bio_subtitle": "Piv on-me?",
   "bio_paragraphs": [
-    "Deraouet eo va c'hoant evit reizhiadiñ e-pad ar c'hwec'hved bloavezh skol. Abaoe, em eus savet meur a raktres, evel labourer-frank hag evit va intereso personel.",
-    "Ouzhpenn ma labour evel sevener, labourer-diogelded on ivez en ur gêr-noz.",
-    "En em gavet am eus gant an diorren web hag an diorren c'hoarioù Roblox."
+    "\"Kroget em eus en ur sevel c'hoarioù bihan gant GameMaker, ha goude em eus desket gant ur mignon da skrivañ gwirusoù faos e Visual Basic — ha neuze em eus komprenet petra oa ar programmiñ gwirion.\"",
+    "Abaoe, em eus savet meur a raktres, evel labourer-frank hag evit va-unan, en ur zeskiñ an diorren web hag an diorren c'hoarioù Roblox. Labourat a ran bremañ evel gward surentez en ur gêr-noz, hag e kasan ar muiañ eus va amzer koadañ etre ma c'hwardioù.",
+    "Unan eus ar raktresoù am eus lorc'h ennañ eo RBX Native — gwelout e Raktresoù. O prientiñ emaon ivez un dra nevez am eus c'hoant da dreiñ e-barzh va c'hompagnunezh va-unan a-benn nebeut.",
+    "A-walc'h on da sevel buan hag adkemer, kement ha da brientiñ pizh a-raok, hag e teuan a-walc'h da labourat va-unan pe gant ur skipailh.",
+    "Deuet on ivez da vezañ mat da c'houlenn gant IAoù evel Claude evit sevel kod naet ha diaskemm, lennus gant tud ha gant agantoù IA all ivez.",
+    "Er-maez eus ar c'hod, ar sonerezh a zo pouezus din — EDM dreist-holl (Virtual Riot, Chimes, Skybreak), met digor on d'an holl seurtoù: jazz, klasel, jungle, reggae, shoegaze. Loathe eo va skipailh karetañ bremañ."
   ],
+  "bio_facts_title": "E Berr",
+  "bio_fact_dayjob_label": "Micher",
+  "bio_fact_dayjob_value": "Gward surentez",
+  "bio_fact_building_label": "O Sevel",
+  "bio_fact_building_value": "Ur raktres nevez — va c'hompagnunezh va-unan a-benn nebeut",
+  "bio_fact_open_label": "Digor da",
+  "bio_fact_open_value": "Labour-frank ha kenlabour",
+  "bio_fact_listening_label": "O selaou bremañ",
   "what_i_do_title": "Ar pezh a ran",
   "what_i_do": [
     "Krouiñ ha diorren arloadoù web full-stack, eus an ali betek al lançañ.",
@@ -41,9 +51,9 @@
     "Kroget em eus da ginnig raktresoù dizalc'h, da ober war-dro sevel lec'hiennoù ha sevel c'hoarioù evit meur a c'hliented.",
     "Kempouezañ an diorren hag ur roll evel gward surentez en ur discothèque, en ur genderc'hel da ginnig raktresoù nevez."
   ],
-  "skills_title": "AMPARANTEZIOÙ",
+  "skills_title": "Amparantezioù",
   "skills_subtitle": "Roll an teknologiezhioù hag an ostilhoù mestroniet.",
-  "contact_title": "DAREMPRED",
+  "contact_title": "Darempred",
   "contact_subtitle": "Kenskoazell ha darempred evit raktresoù pe c'houlenn.",
   "contact_paragraphs": [
     "Evit goulenn diwar-benn raktresoù, kenober pe kaozeal — mont e darempred din war Roblox pe Discord."

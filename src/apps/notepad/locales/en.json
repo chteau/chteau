@@ -1,16 +1,26 @@
 {
-  "app_title": "Chteau.txt - Notepad",
-  "tab_bio": "000_BIO",
-  "tab_journey": "010_JOURNEY",
-  "tab_skills": "202_SKILLS",
-  "tab_contact": "003_CONTACT",
-  "bio_title": "BIO // CHEETEAU",
+  "tab_bio": "Bio",
+  "tab_journey": "Journey",
+  "tab_skills": "Skills",
+  "tab_contact": "Contact",
+  "bio_title": "About Me",
   "bio_subtitle": "Who am I?",
   "bio_paragraphs": [
-    "My interest in programming dates back to sixth grade. Since then, I have built a wide range of projects, both as a freelancer and purely for personal interest.",
-    "In addition to my role in development, I am employed as a security guard at a nightclub.",
-    "I possess hands-on experience in web development and Roblox game development."
+    "\"Started out building small games in GameMaker as a kid — then a friend taught me to write fake viruses in Visual Basic and showed me what real programming could do. That's when it really clicked.\"",
+    "Since then I've built a wide range of projects, both freelance and for myself, picking up web development and Roblox game development along the way. I currently work as a security guard at a nightclub, and get most of my coding done between shifts.",
+    "One project I'm especially proud of is RBX Native — check it out in Projects. I'm also quietly building something new that I'm planning to turn into my own company soon.",
+    "I'm comfortable shipping fast and iterating just as much as planning heavily upfront, and I'm equally happy solo-deving or collaborating with a team.",
+    "I've also gotten good at prompting AI tools like Claude to produce clean, maintainable code that's readable by both humans and other AI agents.",
+    "Outside of code I'm into music — mostly EDM (Virtual Riot, Chimes, Skybreak), but honestly open to anything: jazz, classical, jungle, reggae, shoegaze. Loathe is my current favorite band."
   ],
+  "bio_facts_title": "Quick Facts",
+  "bio_fact_dayjob_label": "Day Job",
+  "bio_fact_dayjob_value": "Security Guard",
+  "bio_fact_building_label": "Also Building",
+  "bio_fact_building_value": "A new project — soon my own company",
+  "bio_fact_open_label": "Open To",
+  "bio_fact_open_value": "Freelance & collabs",
+  "bio_fact_listening_label": "Now Listening",
   "what_i_do_title": "What I Do",
   "what_i_do": [
     "Design and develop full-stack web applications from concept to launch",
@@ -41,9 +51,9 @@
     "Began taking on freelance projects, delivering web and game development work for various clients.",
     "Balancing active development work with a role as a security guard in a nightclub, continuing to ship new projects."
   ],
-  "skills_title": "SKILLS",
+  "skills_title": "Skills",
   "skills_subtitle": "List of active developer profiles and tools.",
-  "contact_title": "GET IN TOUCH",
+  "contact_title": "Get in Touch",
   "contact_subtitle": "Connect with me for projects or inquiries.",
   "contact_paragraphs": [
     "For project inquiries, collaborations, or just to say hi — reach out on Roblox or Discord."

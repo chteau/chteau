@@ -16,16 +16,20 @@ const sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
  * @param cacheOptions - Pass `{ noStore: true }` for routes that cache their
  *                       own response via `export const revalidate`; otherwise
  *                       supply `{ revalidate: N }` for per-URL Data Cache.
+ * @param init         - Optional method/body/headers override, for POST
+ *                       endpoints (e.g. the batch user-info API).
  */
 export async function robloxFetch<T>(
     url: string,
     cacheOptions: { revalidate: number } | { noStore: true } = { revalidate: 86400 },
+    init?: RequestInit,
 ): Promise<T> {
     const RETRIES   = 3;
     const DELAYS_MS = [0, 1_000, 2_000];
 
     const primaryOpts: RequestInit = {
-        headers: { Accept: 'application/json' },
+        ...init,
+        headers: { Accept: 'application/json', ...init?.headers },
         ...('noStore' in cacheOptions
             ? { cache: 'no-store' }
             : { next: { revalidate: cacheOptions.revalidate } }),
@@ -52,7 +56,8 @@ export async function robloxFetch<T>(
     console.warn(`[robloxFetch] primary failed (${res?.status ?? '429×3'}) — trying roproxy: ${proxyUrl}`);
 
     const proxyRes = await attempt(proxyUrl, {
-        headers: { Accept: 'application/json' },
+        ...init,
+        headers: { Accept: 'application/json', ...init?.headers },
         cache: 'no-store',
     });
 

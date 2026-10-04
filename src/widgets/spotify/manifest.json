@@ -1,9 +1,0 @@
-{
-    "id": "spotify",
-    "name": "Now Playing",
-    "icon": "Music2",
-    "description": "What am I currently listening to on Spotify",
-    "defaultPosition": { "x": 20, "y": 20 },
-    "defaultSize": { "width": 380, "height": 148 },
-    "defaultAnchor": "bottom-right"
-}
