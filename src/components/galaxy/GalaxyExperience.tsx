@@ -72,7 +72,12 @@ export default function GalaxyExperience() {
 
     return (
         <div className="w-screen h-screen relative overflow-hidden bg-black select-none" id="galaxy-root">
-            <GalaxyScene focusedId={focusedId} focusedStarId={focusedStar?.id ?? null} onIntroComplete={handleIntroComplete} />
+            <GalaxyScene
+                focusedId={focusedId}
+                focusedStarId={focusedStar?.id ?? null}
+                onClearStarFocus={closeStarModal}
+                onIntroComplete={handleIntroComplete}
+            />
             <HeroOverlay visible={introDone && !focusedId && !focusedStar} />
             <LanguageSwitcher />
             <NavMenu visible={introDone} onSelect={selectStar} onAddStar={() => setAddStarOpen(true)} />

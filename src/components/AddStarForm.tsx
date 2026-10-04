@@ -99,7 +99,9 @@ export default function AddStarForm({ onClose }: { onClose: () => void }) {
             }
 
             setDone(true);
-            window.dispatchEvent(new CustomEvent('visitor-star-added'));
+            // Carries the freshly-created star itself so listeners can show it immediately
+            // instead of re-fetching (which can lag slightly behind a just-finished write).
+            window.dispatchEvent(new CustomEvent('visitor-star-added', { detail: data.star }));
         } catch {
             setError('Network error — please try again.');
         } finally {

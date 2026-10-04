@@ -45,15 +45,21 @@ function GrowingNebula({ reducedMotion }: { reducedMotion: boolean }) {
  * @param focusedId - The currently selected section (chosen from `NavMenu`), or null for the overview.
  * @param focusedStarId - A visitor star's id, chosen from the Star Explorer panel — flies the camera to it the
  *                        same way `focusedId` does for a section, but doesn't drive `SectionPanel`.
+ * @param onClearStarFocus - Called when a click hits empty space (`onPointerMissed`) — tells `GalaxyExperience`
+ *                          to drop `focusedStarId`/close `VisitorStarModal` if one is open, same as clicking its
+ *                          own backdrop would. Only scoped to visitor-star focus, not `SectionPanel`, so an
+ *                          errant click near its edge can't unexpectedly close an open section.
  * @param onIntroComplete - Called once the intro (or its reduced-motion/no-WebGL equivalent) has finished.
  */
 export default function GalaxyScene({
     focusedId,
     focusedStarId,
+    onClearStarFocus,
     onIntroComplete,
 }: {
     focusedId: SectionId | null;
     focusedStarId?: string | null;
+    onClearStarFocus?: () => void;
     onIntroComplete?: () => void;
 }) {
     const [reducedMotion, setReducedMotion] = useState(
@@ -63,6 +69,7 @@ export default function GalaxyScene({
     const [isMobile, setIsMobile] = useState(false);
     const [introDone, setIntroDone] = useState(false);
     const [fieldGalaxiesMounted, setFieldGalaxiesMounted] = useState(true);
+    const [selectedStarId, setSelectedStarId] = useState<string | null>(null);
     const mouse = useRef({ x: 0, y: 0 });
     const starRefs = useRef<Record<string, React.RefObject<THREE.Sprite | null>>>({});
 
@@ -130,6 +137,10 @@ export default function GalaxyScene({
             camera={{ position: (reducedMotion ? ORBIT_START_POS : INTRO_START_POS).toArray(), fov: 50 }}
             gl={{ antialias: true }}
             className="absolute inset-0"
+            onPointerMissed={() => {
+                setSelectedStarId(null);
+                onClearStarFocus?.();
+            }}
         >
             <color attach="background" args={['#000000']} />
             <Suspense fallback={null}>
@@ -139,7 +150,7 @@ export default function GalaxyScene({
                     <FieldGalaxies count={isMobile ? 22 : 46} reducedMotion={reducedMotion} fadingOut={introDone} />
                 )}
                 <GrowingNebula reducedMotion={reducedMotion} />
-                <VisitorStars registerRef={registerRef} />
+                <VisitorStars registerRef={registerRef} selectedId={selectedStarId} onSelect={setSelectedStarId} />
                 {SECTION_STARS.map(star => (
                     <FeatureStar
                         key={star.id}

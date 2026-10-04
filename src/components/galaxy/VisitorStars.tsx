@@ -108,35 +108,47 @@ function VisitorStarPoint({
 }
 
 /**
- * Every visitor-submitted star, fetched once on mount and re-fetched when
- * `AddStarForm` fires `visitor-star-added` (it lives outside the Canvas, so
- * a window event is the simplest bridge). Unlike the 5 decorative feature
+ * Every visitor-submitted star, fetched once on mount. `AddStarForm` fires
+ * `visitor-star-added` on success (it lives outside the Canvas, so a window
+ * event is the simplest bridge) carrying the newly-created star itself in
+ * `event.detail` — appended straight into local state so it shows up
+ * immediately rather than waiting on a re-fetch, which can lag slightly
+ * behind a just-finished Blobs write. Unlike the 5 decorative feature
  * stars, these are interactive: hover previews, click opens the visitor's
- * message and links. Each also reports its ref up via `registerRef` (same
- * mechanism `FeatureStar` uses) so the camera rig can fly to one chosen
- * from the Star Explorer panel.
+ * message and links (deselected by clicking anywhere else — see
+ * `GalaxyScene`'s `onPointerMissed`). Each also reports its ref up via
+ * `registerRef` (same mechanism `FeatureStar` uses) so the camera rig can
+ * fly to one chosen from the Star Explorer panel.
  *
  * @param registerRef - Reports a star's sprite ref, keyed by its id, up to `GalaxyScene`'s shared ref registry.
+ * @param selectedId - The currently selected (directly clicked) star's id, or null — owned by `GalaxyScene` so a
+ *                     click that misses every object (`onPointerMissed`) can clear it.
+ * @param onSelect - Reports a click on a star (or a re-click to deselect it) up to `GalaxyScene`.
  */
 export default function VisitorStars({
     registerRef,
+    selectedId,
+    onSelect,
 }: {
     registerRef: (id: string, ref: React.RefObject<THREE.Sprite | null>) => void;
+    selectedId: string | null;
+    onSelect: (id: string | null) => void;
 }) {
     const [stars, setStars] = useState<VisitorStar[]>([]);
-    const [selectedId, setSelectedId] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchStars = () => {
-            fetch('/api/stars', { cache: 'no-store' })
-                .then((r) => (r.ok ? r.json() : Promise.reject()))
-                .then((data) => setStars(Array.isArray(data.stars) ? data.stars : []))
-                .catch(() => {});
-        };
+        fetch('/api/stars', { cache: 'no-store' })
+            .then((r) => (r.ok ? r.json() : Promise.reject()))
+            .then((data) => setStars(Array.isArray(data.stars) ? data.stars : []))
+            .catch(() => {});
 
-        fetchStars();
-        window.addEventListener('visitor-star-added', fetchStars);
-        return () => window.removeEventListener('visitor-star-added', fetchStars);
+        const onStarAdded = (e: Event) => {
+            const added = (e as CustomEvent<VisitorStar | undefined>).detail;
+            if (!added?.id) return;
+            setStars((prev) => (prev.some((s) => s.id === added.id) ? prev : [...prev, added]));
+        };
+        window.addEventListener('visitor-star-added', onStarAdded);
+        return () => window.removeEventListener('visitor-star-added', onStarAdded);
     }, []);
 
     return (
@@ -146,7 +158,7 @@ export default function VisitorStars({
                     key={star.id}
                     star={star}
                     selected={selectedId === star.id}
-                    onSelect={setSelectedId}
+                    onSelect={onSelect}
                     registerRef={registerRef}
                 />
             ))}
