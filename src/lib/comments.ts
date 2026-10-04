@@ -1,5 +1,6 @@
 import { getStore } from '@netlify/blobs';
 import { randomUUID } from 'node:crypto';
+import { readJsonBlob } from './blobStore';
 
 export interface Comment {
     id: string;
@@ -14,16 +15,8 @@ export interface Comment {
 const STORE_NAME = 'blog-comments';
 
 async function readSlug(slug: string): Promise<Comment[]> {
-    try {
-        const store = getStore(STORE_NAME);
-        const data = await store.get(slug, { type: 'json' });
-        return Array.isArray(data) ? (data as Comment[]) : [];
-    } catch (err) {
-        // See the matching comment in src/lib/stars.ts — degrade to an empty
-        // thread rather than 500ing when Blobs has no site/deploy context.
-        console.warn('[comments] Netlify Blobs unavailable, returning an empty thread:', err);
-        return [];
-    }
+    const data = await readJsonBlob<unknown>(STORE_NAME, slug, []);
+    return Array.isArray(data) ? (data as Comment[]) : [];
 }
 
 /** All comments for a given post slug, oldest first. */

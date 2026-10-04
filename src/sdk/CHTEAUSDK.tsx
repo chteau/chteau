@@ -1,7 +1,7 @@
 "use client";
 
 // Dependencies
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
 import { CHTEAUSDKContextProps, Language } from '../types';
 import { TRANSLATIONS } from '../data';
 
@@ -28,13 +28,13 @@ export function CHTEAUSDKProvider({ children }: CHTEAUSDKProviderProps) {
      *
      * @param lang The target language
      */
-    const setLanguage = (lang: Language) => {
+    const setLanguage = useCallback((lang: Language) => {
         setLanguageState(lang);
 
         if (typeof window !== 'undefined') {
             localStorage.setItem('chteau_language', lang);
         }
-    };
+    }, []);
 
     /**
      * Returns the translation for a given key in the current language.
@@ -42,13 +42,15 @@ export function CHTEAUSDKProvider({ children }: CHTEAUSDKProviderProps) {
      * @param key The key to translate
      * @returns The translation for the given key
      */
-    const t = (key: string): string => {
-        const dict = TRANSLATIONS[language] || TRANSLATIONS['en'];
-        return (dict as any)[key] || (TRANSLATIONS['en'] as any)[key] || key;
-    };
+    const t = useCallback((key: string): string => {
+        const dict: Record<string, string> = TRANSLATIONS[language] ?? TRANSLATIONS['en'];
+        return dict[key] ?? (TRANSLATIONS['en'] as Record<string, string>)[key] ?? key;
+    }, [language]);
+
+    const value = useMemo(() => ({ language, setLanguage, t }), [language, setLanguage, t]);
 
     return (
-        <CHTEAUSDKContext.Provider value={{ language, setLanguage, t }}>
+        <CHTEAUSDKContext.Provider value={value}>
             {children}
         </CHTEAUSDKContext.Provider>
     );

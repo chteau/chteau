@@ -45,6 +45,8 @@ export default function CameraRig({
     const lookAtTarget = useRef(new THREE.Vector3().copy(DEFAULT_LOOKAT));
     const starWorldPos = useRef(new THREE.Vector3());
     const desiredPos = useRef(new THREE.Vector3(0, ORBIT_HEIGHT, ORBIT_RADIUS));
+    const orbitPos = useRef(new THREE.Vector3());
+    const dir = useRef(new THREE.Vector3());
 
     useFrame(({ clock }, delta) => {
         const t = clock.getElapsedTime();
@@ -83,7 +85,7 @@ export default function CameraRig({
             orbitAngle.current += delta * ORBIT_SPEED;
         }
 
-        const orbitPos = new THREE.Vector3(
+        orbitPos.current.set(
             Math.sin(orbitAngle.current) * ORBIT_RADIUS,
             ORBIT_HEIGHT,
             Math.cos(orbitAngle.current) * ORBIT_RADIUS
@@ -91,13 +93,13 @@ export default function CameraRig({
 
         if (focusedRef?.current) {
             focusedRef.current.getWorldPosition(starWorldPos.current);
-            const dir = new THREE.Vector3().subVectors(orbitPos, starWorldPos.current).normalize();
-            desiredPos.current.copy(starWorldPos.current).addScaledVector(dir, FOCUS_DISTANCE);
+            dir.current.subVectors(orbitPos.current, starWorldPos.current).normalize();
+            desiredPos.current.copy(starWorldPos.current).addScaledVector(dir.current, FOCUS_DISTANCE);
             lookAtTarget.current.lerp(starWorldPos.current, lerpFactor);
         } else {
             const parallaxX = reducedMotion ? 0 : mouse.current.x * 0.5;
             const parallaxY = reducedMotion ? 0 : mouse.current.y * 0.25;
-            desiredPos.current.set(orbitPos.x + parallaxX, orbitPos.y + parallaxY, orbitPos.z);
+            desiredPos.current.set(orbitPos.current.x + parallaxX, orbitPos.current.y + parallaxY, orbitPos.current.z);
             lookAtTarget.current.lerp(DEFAULT_LOOKAT, lerpFactor);
         }
 

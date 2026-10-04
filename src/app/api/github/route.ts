@@ -144,7 +144,9 @@ export async function GET(request: Request) {
             default:
                 return NextResponse.json({ error: 'Invalid type' }, { status: 400 });
         }
-    } catch {
-        return NextResponse.json({ error: 'GitHub API error' }, { status: 500 });
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        console.error('Error fetching from GitHub API:', message);
+        return NextResponse.json({ error: 'GitHub API error', message }, { status: 500 });
     }
 }

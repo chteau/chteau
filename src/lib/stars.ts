@@ -1,5 +1,6 @@
 import { getStore } from '@netlify/blobs';
 import { createHash, randomUUID } from 'node:crypto';
+import { readJsonBlob } from './blobStore';
 
 /** A visitor-submitted star, as sent to the client — never includes `ownerHash`. */
 export interface VisitorStar {
@@ -63,17 +64,8 @@ function toPublic(star: StoredStar): VisitorStar {
 }
 
 async function readAll(): Promise<StoredStar[]> {
-    try {
-        const store = getStore(STORE_NAME);
-        const data = await store.get(BLOB_KEY, { type: 'json' });
-        return Array.isArray(data) ? (data as StoredStar[]) : [];
-    } catch (err) {
-        // Netlify Blobs needs a linked site/deploy context (auto-injected on
-        // Netlify; absent in plain `next dev` without the Netlify CLI) — degrade
-        // to an empty list rather than 500ing the public listing endpoint.
-        console.warn('[stars] Netlify Blobs unavailable, returning an empty list:', err);
-        return [];
-    }
+    const data = await readJsonBlob<unknown>(STORE_NAME, BLOB_KEY, []);
+    return Array.isArray(data) ? (data as StoredStar[]) : [];
 }
 
 async function writeAll(stars: StoredStar[]): Promise<void> {
