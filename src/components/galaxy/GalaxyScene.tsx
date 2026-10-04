@@ -49,16 +49,22 @@ function GrowingNebula({ reducedMotion }: { reducedMotion: boolean }) {
  *                          to drop `focusedStarId`/close `VisitorStarModal` if one is open, same as clicking its
  *                          own backdrop would. Only scoped to visitor-star focus, not `SectionPanel`, so an
  *                          errant click near its edge can't unexpectedly close an open section.
+ * @param suppressPopover - True whenever any DOM overlay (`SectionPanel`, `VisitorStarModal`, `AddStarForm`) is
+ *                          open — drops the directly-clicked star's small in-canvas popover, since drei's `Html`
+ *                          renders it in a way that otherwise sits in front of (z-index-wise) whatever overlay
+ *                          just opened.
  * @param onIntroComplete - Called once the intro (or its reduced-motion/no-WebGL equivalent) has finished.
  */
 export default function GalaxyScene({
     focusedId,
     focusedStarId,
+    suppressPopover,
     onClearStarFocus,
     onIntroComplete,
 }: {
     focusedId: SectionId | null;
     focusedStarId?: string | null;
+    suppressPopover?: boolean;
     onClearStarFocus?: () => void;
     onIntroComplete?: () => void;
 }) {
@@ -122,6 +128,11 @@ export default function GalaxyScene({
         const timer = setTimeout(() => setFieldGalaxiesMounted(false), FADE_OUT_DURATION_S * 1000 + 150);
         return () => clearTimeout(timer);
     }, [introDone]);
+
+    // A menu action just opened a DOM overlay — drop the in-canvas popover so its Html-rendered z-index can't sit in front of it.
+    useEffect(() => {
+        if (suppressPopover) setSelectedStarId(null);
+    }, [suppressPopover]);
 
     if (!webglOk) {
         return (

@@ -75,6 +75,7 @@ export default function GalaxyExperience() {
             <GalaxyScene
                 focusedId={focusedId}
                 focusedStarId={focusedStar?.id ?? null}
+                suppressPopover={!!focusedId || !!focusedStar || addStarOpen}
                 onClearStarFocus={closeStarModal}
                 onIntroComplete={handleIntroComplete}
             />
