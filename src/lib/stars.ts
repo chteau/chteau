@@ -39,7 +39,7 @@ const PALETTE = ['#4ade80', '#22c55e', '#86efac', '#34d399'];
  */
 function randomPosition(): [number, number, number] {
     const theta = Math.random() * Math.PI * 2;
-    const radius = 3 + Math.random() * 6;
+    const radius = 1.5 + Math.random() * 3;
     const height = (Math.random() - 0.5) * 2.4;
     return [Math.cos(theta) * radius, height, Math.sin(theta) * radius];
 }

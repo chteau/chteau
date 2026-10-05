@@ -161,4 +161,4 @@ export const STUDIOS: Studio[] = [
 ];
 
 /** Roblox user IDs featured in the "Spotlight" section — fetched live for username, verified badge, and avatar. */
-export const SPOTLIGHT_USER_IDS: number[] = [4337879873, 105519417, 5647093294, 10595767136];
+export const SPOTLIGHT_USER_IDS: number[] = [4337879873, 105519417, 5647093294, 10595767136, 1274097373];
