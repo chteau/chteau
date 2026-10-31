@@ -5,6 +5,8 @@ import heimdallPreviewImg from './images/heimdall.png';
 import robloxSupabasePreviewImg from './images/roblox-supabase.png';
 import fragmentPreviewImg from './images/fragment.png';
 import rbxNativePreviewImg from './images/rbx-native.png';
+import vcwlPreviewImg from './images/vcwl.png';
+import openArenaPreviewImg from './images/openarena.png';
 
 /**
  * A single project entry displayed in the Projects explorer.
@@ -120,5 +122,23 @@ export const PROJECTS: Project[] = [
         tags: ['Roblox', 'Rust', 'GPUI', 'wgpu', 'Luau'],
         thumbnail: rbxNativePreviewImg.src,
         githubUrl: 'https://github.com/chteau/rbx-native',
+    },
+    {
+        id: 'vcwl',
+        title: 'VCWL',
+        description: "The Vibe Coded Web Language. It's going to revolutionize web development (it's not). A typed language that compiles web apps to WasmGC and paints them on a canvas.",
+        tags: ['Language', 'Rust', 'WasmGC', 'Compiler'],
+        thumbnail: vcwlPreviewImg.src,
+        appUrl: 'https://vcwl.chteau.bzh/',
+        githubUrl: 'https://github.com/chteau/vcwl',
+    },
+    {
+        id: 'openarena-rbx',
+        title: 'OpenArena for Roblox',
+        description: 'OpenArena 0.8.8 ported to Roblox, a proof of concept for RBX Native.',
+        tags: ['Roblox', 'Luau', 'Game', 'Port'],
+        thumbnail: openArenaPreviewImg.src,
+        appUrl: 'https://www.roblox.com/games/130309438802709/OpenArena',
+        githubUrl: 'https://github.com/chteau/openarena-rbx',
     }
 ];
