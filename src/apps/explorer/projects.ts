@@ -7,6 +7,7 @@ import fragmentPreviewImg from './images/fragment.png';
 import rbxNativePreviewImg from './images/rbx-native.png';
 import vcwlPreviewImg from './images/vcwl.png';
 import openArenaPreviewImg from './images/openarena.png';
+import almanachPreviewImg from './images/almanach.png';
 
 /**
  * A single project entry displayed in the Projects explorer.
@@ -121,6 +122,7 @@ export const PROJECTS: Project[] = [
         description: "Unofficial, native Roblox Studio–style editor written in Rust with GPUI and wgpu. It opens, renders and edits .rbxl/.rbxlx places, and ships its own parsers, reflection database and sandboxed Luau runtime.",
         tags: ['Roblox', 'Rust', 'GPUI', 'wgpu', 'Luau'],
         thumbnail: rbxNativePreviewImg.src,
+        appUrl: 'https://rbxnative.chteau.bzh/',
         githubUrl: 'https://github.com/chteau/rbx-native',
     },
     {
@@ -140,5 +142,14 @@ export const PROJECTS: Project[] = [
         thumbnail: openArenaPreviewImg.src,
         appUrl: 'https://www.roblox.com/games/130309438802709/OpenArena',
         githubUrl: 'https://github.com/chteau/openarena-rbx',
+    },
+    {
+        id: 'almanach',
+        title: 'Almanach',
+        description: "A free, self-hosted dashboard for freelancers: clients, quotes, invoices, time tracking, and every administrative deadline of your country with how much to set aside. Country rules ship as signed packs, France verified.",
+        tags: ['Self-hosted', 'TypeScript', 'React', 'Bun', 'PostgreSQL'],
+        thumbnail: almanachPreviewImg.src,
+        appUrl: 'https://almanach.chteau.bzh/',
+        githubUrl: 'https://github.com/chteau/almanach',
     }
 ];
